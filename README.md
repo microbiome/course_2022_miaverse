@@ -7,6 +7,14 @@
 Figure source: Moreno-Indias _et al_. (2021) [Statistical and Machine Learning Techniques in Human Microbiome Studies: Contemporary Challenges and Solutions](https://doi.org/10.3389/fmicb.2021.635781). Frontiers in Microbiology 12:11. 
 
 
+## Rendering the book
+
+You can render the book locally in R with:
+
+```{r serve}
+bookdown::serve_book()
+``` 
+
 ## The miaverse framework
 
 The [_miaverse_](https://microbiome.github.io) (mia = **MI**crobiome **A**nalysis) is an
