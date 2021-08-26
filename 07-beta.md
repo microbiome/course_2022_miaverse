@@ -355,28 +355,54 @@ euclidean_patient_status_plot
 
 ### PCoA plot with continuous variable
 
-We can do the same as above using any continuous variable. E.g. let us
-see how the plotted samples differ in their alpha diversity (as an
-example of a continuous variable):
+We can also overlay a continuous variable on a PCoA plot. E.g. let us
+use the alcohol study dataset from [curatedMetagenomicData](https://bioconductor.org/packages/release/data/experiment/vignettes/curatedMetagenomicData/inst/doc/curatedMetagenomicData.html).
+Perform PCoA and use the BMI as our continuous variable:
+
+
 
 
 
 ```r
-# Adds coloring information to the data frame, creates new column
-euclidean_shannon_pcoa_df <- cbind(euclidean_pcoa_df,
-                             shannon = colData(tse)$Shannon_diversity)
+# Retrieving data as a TreeSummarizedExperiment object, and agglomerating to a genus level.
+library(curatedMetagenomicData)
+library(dplyr)
+library(DT)
+# Querying the data
+tse_data <- sampleMetadata %>%
+    filter(age >= 18) %>% # taking only data of age 18 or above
+    filter(!is.na(alcohol)) %>% # excluding missing values
+    returnSamples("relative_abundance")
 
-# Creates a plot
-euclidean_shannon_plot <- ggplot(data = euclidean_shannon_pcoa_df, 
-                                 aes(x=pcoa1, y=pcoa2,
-                                     color = shannon)) + 
-  geom_point() +
-  labs(x = "PC1",
-       y = "PC2",
-       title = "PCoA with Aitchison distances") +
-  theme(title = element_text(size = 12)) # makes titles smaller
+# Agglomeration
+tse_genus <- agglomerateByRank(tse_data, rank="Genus")
+```
 
-euclidean_shannon_plot
+Performing PCoA with Bray-Curtis dissimilarity.
+
+
+```r
+library(scater)
+```
+
+```
+## Loading required package: scuttle
+```
+
+```r
+tse_genus <- runMDS(tse_genus, FUN = vegan::vegdist,
+              name = "PCoA_BC", exprs_values = "relative_abundance")
+
+# Retrieving the explained variance
+e <- attr(reducedDim(tse_genus, "PCoA_BC"), "eig");
+var_explained <- e/sum(e[e>0])*100
+
+# Visualization
+plot <-plotReducedDim(tse_genus,"PCoA_BC", colour_by = "BMI")+
+  labs(x=paste("PC1 (",round(var_explained[1],1),"%)"),
+       y=paste("PC2 (",round(var_explained[2],1),"%)"),
+       color="")
+plot
 ```
 
 ![](07-beta_files/figure-latex/pcoa_coloring-1.pdf)<!-- --> 
@@ -414,7 +440,7 @@ print(paste0("Different different cohorts and variance of abundance ",
 ```
 
 ```
-## [1] "Different different cohorts and variance of abundance between samples, p-value: 0.7439"
+## [1] "Different different cohorts and variance of abundance between samples, p-value: 0.7528"
 ```
 
 The cohort variable is not significantly associated with
@@ -462,7 +488,7 @@ top_taxa_coeffient_plot <- top_taxa_coeffient_plot +
 top_taxa_coeffient_plot
 ```
 
-![](07-beta_files/figure-latex/unnamed-chunk-2-1.pdf)<!-- --> 
+![](07-beta_files/figure-latex/unnamed-chunk-4-1.pdf)<!-- --> 
 
 
 There are many alternative and complementary methods for analysing

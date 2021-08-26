@@ -24,7 +24,7 @@
 <meta name="author" content="University of Turku" />
 
 
-<meta name="date" content="2021-08-12" />
+<meta name="date" content="2021-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -274,22 +274,22 @@ div.csl-indent {
 <div id="shapiro-wilk-test" class="section level2" number="11.1">
 <h2><span class="header-section-number">11.1</span> Shapiro-Wilk test</h2>
 <p>If necessary, it is possible to assess normality of the data with Shapiro-Wilk test.</p>
-<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="miscellaneous-material.html#cb271-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Does Shapiro-Wilk test. Does it only for columns that contain abundances, not for</span></span>
-<span id="cb271-2"><a href="miscellaneous-material.html#cb271-2" aria-hidden="true" tabindex="-1"></a><span class="co"># column that contain Groups.</span></span>
-<span id="cb271-3"><a href="miscellaneous-material.html#cb271-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb271-4"><a href="miscellaneous-material.html#cb271-4" aria-hidden="true" tabindex="-1"></a>normality_test_p <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb271-5"><a href="miscellaneous-material.html#cb271-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb271-6"><a href="miscellaneous-material.html#cb271-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (column <span class="cf">in</span> </span>
-<span id="cb271-7"><a href="miscellaneous-material.html#cb271-7" aria-hidden="true" tabindex="-1"></a>     abundance_analysis_data[, <span class="sc">!</span><span class="fu">names</span>(abundance_analysis_data) <span class="sc">%in%</span> <span class="st">&quot;patient_status&quot;</span>]){</span>
-<span id="cb271-8"><a href="miscellaneous-material.html#cb271-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Does Shapiro-Wilk test</span></span>
-<span id="cb271-9"><a href="miscellaneous-material.html#cb271-9" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(column)</span>
-<span id="cb271-10"><a href="miscellaneous-material.html#cb271-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb271-11"><a href="miscellaneous-material.html#cb271-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Stores p-value to vector</span></span>
-<span id="cb271-12"><a href="miscellaneous-material.html#cb271-12" aria-hidden="true" tabindex="-1"></a>  normality_test_p <span class="ot">&lt;-</span> <span class="fu">c</span>(normality_test_p, result<span class="sc">$</span>p.value)</span>
-<span id="cb271-13"><a href="miscellaneous-material.html#cb271-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb271-14"><a href="miscellaneous-material.html#cb271-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb271-15"><a href="miscellaneous-material.html#cb271-15" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">&quot;P-values over 0.05: &quot;</span>, <span class="fu">sum</span>(normality_test_p<span class="sc">&gt;</span><span class="fl">0.05</span>), <span class="st">&quot;/&quot;</span>, </span>
-<span id="cb271-16"><a href="miscellaneous-material.html#cb271-16" aria-hidden="true" tabindex="-1"></a>             <span class="fu">length</span>(normality_test_p)))</span></code></pre></div>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="miscellaneous-material.html#cb274-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Does Shapiro-Wilk test. Does it only for columns that contain abundances, not for</span></span>
+<span id="cb274-2"><a href="miscellaneous-material.html#cb274-2" aria-hidden="true" tabindex="-1"></a><span class="co"># column that contain Groups.</span></span>
+<span id="cb274-3"><a href="miscellaneous-material.html#cb274-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb274-4"><a href="miscellaneous-material.html#cb274-4" aria-hidden="true" tabindex="-1"></a>normality_test_p <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb274-5"><a href="miscellaneous-material.html#cb274-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb274-6"><a href="miscellaneous-material.html#cb274-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (column <span class="cf">in</span> </span>
+<span id="cb274-7"><a href="miscellaneous-material.html#cb274-7" aria-hidden="true" tabindex="-1"></a>     abundance_analysis_data[, <span class="sc">!</span><span class="fu">names</span>(abundance_analysis_data) <span class="sc">%in%</span> <span class="st">&quot;patient_status&quot;</span>]){</span>
+<span id="cb274-8"><a href="miscellaneous-material.html#cb274-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Does Shapiro-Wilk test</span></span>
+<span id="cb274-9"><a href="miscellaneous-material.html#cb274-9" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(column)</span>
+<span id="cb274-10"><a href="miscellaneous-material.html#cb274-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb274-11"><a href="miscellaneous-material.html#cb274-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Stores p-value to vector</span></span>
+<span id="cb274-12"><a href="miscellaneous-material.html#cb274-12" aria-hidden="true" tabindex="-1"></a>  normality_test_p <span class="ot">&lt;-</span> <span class="fu">c</span>(normality_test_p, result<span class="sc">$</span>p.value)</span>
+<span id="cb274-13"><a href="miscellaneous-material.html#cb274-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb274-14"><a href="miscellaneous-material.html#cb274-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb274-15"><a href="miscellaneous-material.html#cb274-15" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">&quot;P-values over 0.05: &quot;</span>, <span class="fu">sum</span>(normality_test_p<span class="sc">&gt;</span><span class="fl">0.05</span>), <span class="st">&quot;/&quot;</span>, </span>
+<span id="cb274-16"><a href="miscellaneous-material.html#cb274-16" aria-hidden="true" tabindex="-1"></a>             <span class="fu">length</span>(normality_test_p)))</span></code></pre></div>
 <pre><code>## [1] &quot;P-values over 0.05: 7/54&quot;</code></pre>
 </div>
 <div id="deseq-details" class="section level2" number="11.2">
