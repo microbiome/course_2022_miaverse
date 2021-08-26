@@ -11,7 +11,7 @@ often more than one way to solve a given task. It is assumed that you
 have already installed the required software. Do not hesitate to ask
 support from the course assistants.
 
-## Monday 12 July: from raw sequences to ecological data analysis
+## Day 1: from raw sequences to ecological data analysis
 
 **Lectures**
 
@@ -28,7 +28,7 @@ support from the course assistants.
 
 ----------------------------------------------------------------
 
-## Tuesday 13 July - Alpha diversity 
+## Day 2 - Alpha diversity 
 
 **Demo**
 
@@ -44,7 +44,7 @@ support from the course assistants.
 
 ----------------------------------------------------------------
 
-## Wednesday 14 July - Beta diversity
+## Day 3 - Beta diversity
 
 **Demo**
 
@@ -56,7 +56,7 @@ support from the course assistants.
 
 -----------------------------------------------------------------
 
-## Thursday 15 July - Differential abundance
+## Day 4- Differential abundance
 
 **Lecture**
 
@@ -74,7 +74,7 @@ support from the course assistants.
 
 -----------------------------------------------------------------
 
-## Friday 16 July: Presentations & closing
+## Day 5 : Presentations & closing
 
 **Student presentations** on microbiome data analytics
 
