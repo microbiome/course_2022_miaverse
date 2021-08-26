@@ -1,3 +1,24 @@
+```{r, echo=FALSE}
+library(mia)
+library(miaViz)
+se <- readRDS("data/se.rds")
+tse <- readRDS("data/tse.rds")
+tse <- transformCounts(tse, method = "relabundance")
+tse_phylum <- agglomerateByRank(tse, rank = "Phylum")
+
+# Indices to be calculated. 
+# Every index is calculated by default if we don't specify indices.
+indices <- c("shannon")
+
+# Indices are stored in colData (i.e., sample metadata). We can specify the name
+# of column, or we can use the default name which is the name of index 
+# (i.e., "shannon" and "faith"). 
+names <- c("Shannon_diversity")
+
+# Calculates indices
+tse <- estimateDiversity(tse, index = indices, name = names)
+```
+
 
 # Beta diversity
 
@@ -104,7 +125,7 @@ euclidean_pcoa_df <- data.frame(pcoa1 = euclidean_pcoa$vectors[,1],
 euclidean_plot <- ggplot(data = euclidean_pcoa_df, aes(x=pcoa1, y=pcoa2)) +
   geom_point() +
   labs(x = "PC1",
-       y = "PC22",
+       y = "PC2",
        title = "Euclidean PCoA with CLR transformation") +
   theme(title = element_text(size = 12)) # makes titles smaller
 
@@ -115,6 +136,7 @@ euclidean_plot
 ### PCoA aggregated to Phylum level
 
 We use again the Aitchison distances in this example but this time applied to the phylum level.
+
 
 ```{r pcoa_phylum_aitchison}
 # Does clr transformation. Psuedocount is added, because data contains zeros. 
@@ -183,27 +205,50 @@ euclidean_patient_status_plot
 
 ### PCoA plot with continuous variable
 
-We can do the same as above using any continuous variable. E.g. let us
-see how the plotted samples differ in their alpha diversity (as an
-example of a continuous variable):
+We can also overlay a continuous variable on a PCoA plot. E.g. let us
+use the alcohol study dataset from [curatedMetagenomicData](https://bioconductor.org/packages/release/data/experiment/vignettes/curatedMetagenomicData/inst/doc/curatedMetagenomicData.html).
+Perform PCoA and use the BMI as our continuous variable:
 
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+# Installing the package
+if (!require(curatedMetagenomicData)){
+  BiocManager::install("curatedMetagenomicData")  
+}
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+# Retrieving data as a TreeSummarizedExperiment object, and agglomerating to a genus level.
+library(curatedMetagenomicData)
+library(dplyr)
+library(DT)
+# Querying the data
+tse_data <- sampleMetadata %>%
+    filter(age >= 18) %>% # taking only data of age 18 or above
+    filter(!is.na(alcohol)) %>% # excluding missing values
+    returnSamples("relative_abundance")
+
+# Agglomeration
+tse_genus <- agglomerateByRank(tse_data, rank="Genus")
+```
+
+Performing PCoA with Bray-Curtis dissimilarity.
 
 ```{r pcoa_coloring}
-# Adds coloring information to the data frame, creates new column
-euclidean_shannon_pcoa_df <- cbind(euclidean_pcoa_df,
-                             shannon = colData(tse)$Shannon_diversity)
+library(scater)
+tse_genus <- runMDS(tse_genus, FUN = vegan::vegdist,
+              name = "PCoA_BC", exprs_values = "relative_abundance")
 
-# Creates a plot
-euclidean_shannon_plot <- ggplot(data = euclidean_shannon_pcoa_df, 
-                                 aes(x=pcoa1, y=pcoa2,
-                                     color = shannon)) + 
-  geom_point() +
-  labs(x = "PC1",
-       y = "PC2",
-       title = "PCoA with Aitchison distances") +
-  theme(title = element_text(size = 12)) # makes titles smaller
+# Retrieving the explained variance
+e <- attr(reducedDim(tse_genus, "PCoA_BC"), "eig");
+var_explained <- e/sum(e[e>0])*100
 
-euclidean_shannon_plot
+# Visualization
+plot <-plotReducedDim(tse_genus,"PCoA_BC", colour_by = "BMI")+
+  labs(x=paste("PC1 (",round(var_explained[1],1),"%)"),
+       y=paste("PC2 (",round(var_explained[2],1),"%)"),
+       color="")
+plot
 ```
 
 ## Estimating associations with an external variable
@@ -232,9 +277,10 @@ permanova_cohort <- vegan::adonis(rel_abund_assay ~ cohort,
                                   permutations = 9999)
 
 # we can obtain a the p value for our predictor:
-print(paste0("Different different cohorts and variance of abundance 
-              between samples, p-value: ", 
+print(paste0("Different different cohorts and variance of abundance ",
+              "between samples, p-value: ", 
               as.data.frame(permanova_cohort$aov.tab)["cohort", "Pr(>F)"]))
+
 ```  
 
 The cohort variable is not significantly associated with
@@ -279,9 +325,35 @@ top_taxa_coeffient_plot
 ```
 
 
-
-
 There are many alternative and complementary methods for analysing
 community composition. For more examples, see a dedicated section on
 beta diversity in the [online
-book](https://microbiome.github.io/OMA/).
+book](https://microbiome.github.io/OMA/microbiome-diversity.html#beta-diversity).
+
+## Community typing
+
+
+A dedicated section presenting examples on community typing is in the
+[online book](https://microbiome.github.io/OMA/microbiome-community.html#community-typing).
+
+
+
+## Exercises
+
+ * Visualize community variation with different methods (PCA, MDS, t-SNE...) by using the options in the alternative method, plotReducedDim [OMA](https://microbiome.github.io/OMA/microbiome-diversity.html#estimating-beta-diversity). Compare results obtained with different dissimilarities (Euclidean, Bray-Curtis, Unifrac..) and transformations (CLR, compositional..) of your own choice."
+
+ * Investigate the influence of the data transformations on
+   statistical analysis: Visualize community variation with PCoA with
+   the following options: 1) Bray-Curtis distances for compositional
+   data; 2) Euclidean distances for CLR-transformed data.
+
+ * Community-level comparisons: Use PERMANOVA to investigate whether
+   the community composition differs between two groups of individuals
+   (e.g. males and females, or some other grouping of your
+   choice). You can also include covariates such as age and gender,
+   and see how this affects the results.
+   
+ * Perform community typing for the data using the DMM method [OMA](https://microbiome.github.io/OMA/microbiome-community.html#community-typing)
+
+
+ * Example [Solutions](08-5-ex-sol-ADHD.html)

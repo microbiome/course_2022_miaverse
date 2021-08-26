@@ -1,9 +1,11 @@
 bookdown::gitbook:
+  css: style.css
   config:
+    fontsettings:
+      theme: white
     toc:
-      collapse: section
       before: |
-        <li><a href="./">Introduction to miaverse</a></li>
+        <li><a href="./">Introduction to microbiome data science</a></li>
       after: |
         <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
     download: ["pdf"]
@@ -12,3 +14,10 @@ bookdown::gitbook:
       twitter: yes
       facebook: no
       linkedin: yes
+
+bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
+  keep_tex: yes

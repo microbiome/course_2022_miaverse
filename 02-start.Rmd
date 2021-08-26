@@ -15,7 +15,7 @@ unnecessary delays and leaving more time for the course contents.
   but preferred. For further details, check the [Rstudio home
   page](https://www.rstudio.com/).
 
-* [Install and load the required R packages](install.html).
+* Install and load the required R packages
 
 * After a successful installation you can start with the
   case study examples in this training material
@@ -39,7 +39,8 @@ the R session. Only uninstalled packages are installed.
 
 ```{r warning = FALSE, message = FALSE}
 # List of packages that we need from cran and bioc 
-cran_pkg <- c("BiocManager", "bookdown", "dplyr", "ecodist", "ggplot2", "gridExtra", "knitr", "vegan")
+cran_pkg <- c("BiocManager", "bookdown", "dplyr", "ecodist", "ggplot2", 
+              "gridExtra", "kableExtra", "knitr", "scales", "vegan")
 bioc_pkg <- c("ANCOMBC", "ape", "DESeq2",  "DirichletMultinomial", "mia", "miaViz")
 
 # Gets those packages that are already installed
@@ -71,10 +72,12 @@ mia and miaViz are prioritized. Packages that are loaded first have higher prior
 
 ```{r warning = FALSE, message = FALSE}
 # Reorders bioc packages, so that mia and miaViz are first
-bioc_pkg <- c(bioc_pkg[ bioc_pkg %in% c("mia", "miaViz") ], bioc_pkg[ !bioc_pkg %in% c("mia", "miaViz") ] ) 
+bioc_pkg <- c(bioc_pkg[ bioc_pkg %in% c("mia", "miaViz") ], 
+              bioc_pkg[ !bioc_pkg %in% c("mia", "miaViz") ] ) 
 
 # Loading all packages into session. Returns true if package was successfully loaded.
-sapply(c(bioc_pkg, cran_pkg), require, character.only = TRUE)
+loaded <- sapply(c(bioc_pkg, cran_pkg), require, character.only = TRUE)
+as.data.frame(loaded)
 ```
 
 

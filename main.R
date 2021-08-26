@@ -3,21 +3,35 @@
 # setHook(packageEvent("knitr", "attach"),
 #         function(...) knitr::opts_chunk$set(echo = FALSE, fig.path="Figures/"))
 
-# This code below builds the Rmd file into a book
+# This code below builds the Rmd file into a book that is in html format
+# Restart R to clean up the environment, make sure that you've saved everything
+#.rs.restartR()
+# Removes all objects
+rm(list = ls())
 authors <- "Leo Lahti, Tuomas Borman, Henrik Eckermann, Chouaib Benchraka"
+# Read pre-build data objects into the session
+se <- readRDS(file = "data/se.rds")
+tse <- readRDS(file = "data/tse.rds")
 
 library(bookdown)
 # Render html files
 render_book("index.Rmd", "bookdown::gitbook")
 
+####################################
+# Builds book in pdf format
+# Restart R to clean up the environment, make sure that you've saved everything
+#.rs.restartR()
+# Removes all objects
+rm(list = ls())
+authors <- "Leo Lahti, Tuomas Borman, Henrik Eckermann, Chouaib Benchraka"
+# Read pre-build data objects into the session
+se <- readRDS(file = "data/se.rds")
+tse <- readRDS(file = "data/tse.rds")
+
+library(bookdown)
 # Render pdf files
-render_book("index.Rmd", "bookdown::pdf_document2")
+render_book("index.Rmd", "bookdown::pdf_book")
 
-# Instead of render_book, you can run serve_book. The difference is that by serve_book
-# you can preview the book on your web browser live. However, when using serve_book you
-# should have servr package installed. 
 
-# Installs servr package. Needs only to do once.
-# install.packages("servr")
-# starts local web browser and serve the HTML output
-serve_book()
+# After you have rendered the book locally, you can observe rendered
+# html files that are located in docs subfolder.
