@@ -39,7 +39,7 @@ the R session. Only uninstalled packages are installed.
 
 ```{r warning = FALSE, message = FALSE}
 # List of packages that we need from cran and bioc 
-cran_pkg <- c("BiocManager", "bookdown",  "ggtree", "dplyr", "ecodist", "ggplot2", 
+cran_pkg <- c("BiocManager", "bookdown", "dplyr", "ecodist", "ggplot2", 
               "gridExtra", "kableExtra",  "knitr", "scales", "vegan", "matrixStats")
 bioc_pkg <- c("yulab.utils","ggtree","ANCOMBC", "ape", "DESeq2", "DirichletMultinomial", "mia", "miaViz")
 
