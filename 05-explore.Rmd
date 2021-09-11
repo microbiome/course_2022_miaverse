@@ -263,7 +263,7 @@ import the data and generate the analyses.
      diversities. Tips: colData
 
  * **Subsetting** Pick a subset of the data object including only
-     ADHD individuals from Cohort 1. How many there are? Tips: subsetSamples
+     ADHD individuals from Cohort 1. How many there are? Tips: subsetting in [OMA](https://microbiome.github.io/OMA/datamanipulation.html#subsetting)
 
  * **Transformations** The data contains read counts. We can convert
   these into relative abundances and other formats. Compare abundance
