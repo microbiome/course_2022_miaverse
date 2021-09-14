@@ -69,12 +69,6 @@ diff_pseq
 ```
 
 ```{r}
-# absolute difference
-abs_diff <- diff_pseq - diff_tse
-abs_diff
-```
-
-```{r}
 # sanity check
 colnames(molten_tse)
 colnames(molten_pseq)
@@ -107,12 +101,6 @@ diff_pseq
 ```
 
 ```{r}
-# absolute difference
-abs_diff <- diff_pseq - diff_tse
-abs_diff
-```
-
-```{r}
 # sanity check
 # sanity check here
 ```
@@ -139,12 +127,6 @@ pseq_phylum <- phyloseq::tax_glom(pseq,
 end.time2 <- Sys.time()
 diff_pseq <- end.time2 - start.time2
 diff_pseq
-```
-
-```{r}
-# absolute difference
-abs_diff <- diff_pseq - diff_tse
-abs_diff
 ```
 
 ```{r}
@@ -182,4 +164,46 @@ diff_pseq
 # sanity check
 head(colData(alpha_tse)$shannon)
 head(alpha_pseq$shannon)
+```
+## Speed comparison of beta diversity estimation
+
+```{r}
+# load packages for visualization
+library(ggplot2)
+library(scater)
+library(vegan)
+```
+
+```{r}
+# estimate beta diversity in tse
+start.time1 <- Sys.time()
+
+tse <- runMDS(tse, FUN = vegan::vegdist, name = "MDS_BC", exprs_values = "counts")
+
+p <- plotReducedDim(tse, "MDS_BC", colour_by = "SampleType")
+
+print(p)
+
+end.time1 <- Sys.time()
+diff_tse <- end.time1 - start.time1
+diff_tse
+```
+
+```{r}
+# estimate beta diversity in pseq
+start.time2 <- Sys.time()
+
+GP.ord <- ordinate(pseq, "MDS", "bray")
+p = plot_ordination(pseq, GP.ord, type = "samples", color = "SampleType")
+
+print(p)
+
+end.time2 <- Sys.time()
+diff_pseq <- end.time2 - start.time2
+diff_pseq
+```
+
+```{r}
+# sanity check
+# plots are used as sanity check
 ```
