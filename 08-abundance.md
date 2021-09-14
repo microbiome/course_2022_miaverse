@@ -1,236 +1,8 @@
 
-```
-## Loading required package: SummarizedExperiment
-```
-
-```
-## Loading required package: MatrixGenerics
-```
-
-```
-## Loading required package: matrixStats
-```
-
-```
-## 
-## Attaching package: 'MatrixGenerics'
-```
-
-```
-## The following objects are masked from 'package:matrixStats':
-## 
-##     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
-##     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
-##     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
-##     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
-##     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
-##     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
-##     colWeightedMeans, colWeightedMedians, colWeightedSds,
-##     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
-##     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
-##     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
-##     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
-##     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
-##     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
-##     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
-##     rowWeightedSds, rowWeightedVars
-```
-
-```
-## Loading required package: GenomicRanges
-```
-
-```
-## Loading required package: stats4
-```
-
-```
-## Loading required package: BiocGenerics
-```
-
-```
-## 
-## Attaching package: 'BiocGenerics'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     IQR, mad, sd, var, xtabs
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
-##     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
-##     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
-##     union, unique, unsplit, which.max, which.min
-```
-
-```
-## Loading required package: S4Vectors
-```
-
-```
-## 
-## Attaching package: 'S4Vectors'
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     expand.grid, I, unname
-```
-
-```
-## Loading required package: IRanges
-```
-
-```
-## Loading required package: GenomeInfoDb
-```
-
-```
-## Loading required package: Biobase
-```
-
-```
-## Welcome to Bioconductor
-## 
-##     Vignettes contain introductory material; view with
-##     'browseVignettes()'. To cite Bioconductor, see
-##     'citation("Biobase")', and for packages 'citation("pkgname")'.
-```
-
-```
-## 
-## Attaching package: 'Biobase'
-```
-
-```
-## The following object is masked from 'package:MatrixGenerics':
-## 
-##     rowMedians
-```
-
-```
-## The following objects are masked from 'package:matrixStats':
-## 
-##     anyMissing, rowMedians
-```
-
-```
-## Loading required package: SingleCellExperiment
-```
-
-```
-## Loading required package: TreeSummarizedExperiment
-```
-
-```
-## Loading required package: Biostrings
-```
-
-```
-## Loading required package: XVector
-```
-
-```
-## 
-## Attaching package: 'Biostrings'
-```
-
-```
-## The following object is masked from 'package:base':
-## 
-##     strsplit
-```
-
-```
-## Loading required package: ggplot2
-```
-
-```
-## Loading required package: ggraph
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-```
-
-```
-## The following objects are masked from 'package:Biostrings':
-## 
-##     collapse, intersect, setdiff, setequal, union
-```
-
-```
-## The following object is masked from 'package:XVector':
-## 
-##     slice
-```
-
-```
-## The following object is masked from 'package:Biobase':
-## 
-##     combine
-```
-
-```
-## The following objects are masked from 'package:GenomicRanges':
-## 
-##     intersect, setdiff, union
-```
-
-```
-## The following object is masked from 'package:GenomeInfoDb':
-## 
-##     intersect
-```
-
-```
-## The following objects are masked from 'package:IRanges':
-## 
-##     collapse, desc, intersect, setdiff, slice, union
-```
-
-```
-## The following objects are masked from 'package:S4Vectors':
-## 
-##     first, intersect, rename, setdiff, setequal, union
-```
-
-```
-## The following objects are masked from 'package:BiocGenerics':
-## 
-##     combine, intersect, setdiff, union
-```
-
-```
-## The following object is masked from 'package:matrixStats':
-## 
-##     count
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
 
 # Differential abundance analysis
 
-Here, we analyse abundances with three different methods: **Wilcoxon test** (CLR), **DESeq2**, 
+Here, we analyse abundances with two different methods: **Wilcoxon test** (CLR),
 and **ANCOM-BC**. All of these test statistical differences between groups. 
 We will analyse Genus level abundances. 
 
@@ -328,126 +100,6 @@ wilcoxon_plot
 
 ![](08-abundance_files/figure-latex/unnamed-chunk-5-1.pdf)<!-- --> 
 
-## DESeq2
-
-Our second analysis method is [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8). This method performs the data
-normalization automatically. It also takes care of the p-value
-adjustment, so we don't have to worry about that.
-
-DESeq2 utilizes a negative binomial distribution to detect differences in
-read counts between groups. Its normalization takes care of the
-differences between library sizes and compositions. DESeq2 analysis
-includes multiple steps, but they are done automatically. More
-information can be found, e.g., from Harvard Chan Bioinformatic Core's
-tutorial [Introduction to DGE -
-ARCHIVED](https://hbctraining.github.io/DGE_workshop/lessons/04_DGE_DESeq2_analysis.html)
-
-Now let us show how to do this. First, run the DESeq2 analysis.
-
-
-```r
-# Creates DESeq2 object from the data. Uses "patient_status" to create groups. 
-ds2 <- DESeqDataSet(tse_genus, ~patient_status)
-```
-
-```
-## converting counts to integer mode
-```
-
-```
-## Warning in DESeqDataSet(tse_genus, ~patient_status): 2 duplicate rownames were
-## renamed by adding numbers
-```
-
-```
-## Warning in DESeqDataSet(tse_genus, ~patient_status): some variables in design
-## formula are characters, converting to factors
-```
-
-```r
-# Does the analysis
-dds <- DESeq(ds2)
-```
-
-```
-## estimating size factors
-```
-
-```
-## estimating dispersions
-```
-
-```
-## gene-wise dispersion estimates
-```
-
-```
-## mean-dispersion relationship
-```
-
-```
-## final dispersion estimates
-```
-
-```
-## fitting model and testing
-```
-
-```
-## -- replacing outliers and refitting for 11 genes
-## -- DESeq argument 'minReplicatesForReplace' = 7 
-## -- original counts are preserved in counts(dds)
-```
-
-```
-## estimating dispersions
-```
-
-```
-## fitting model and testing
-```
-
-```r
-# Gets the results from the object
-res <- results(dds)
-
-# Creates a data frame from results
-df <- as.data.frame(res)
-
-# Adds taxon column that includes names of taxa
-df$taxon <- rownames(df)
-
-# Orders the rows of data frame in increasing order firstly based on column
-# "log2FoldChange" and secondly based on "padj" column
-df <- df %>% arrange(log2FoldChange, padj)
-
-knitr::kable(head(df)) %>% 
-  kableExtra::kable_styling("striped") %>% 
-  kableExtra::scroll_box(width = "100%")
-```
-
-\begin{table}
-\centering
-\begin{tabular}{l|r|r|r|r|r|r|l}
-\hline
-  & baseMean & log2FoldChange & lfcSE & stat & pvalue & padj & taxon\\
-\hline
-Genus:Ruminococcaceae\_UCG-014 & 22.548297 & -24.891268 & 2.460684 & -10.115589 & 0.0000000 & 0.0000000 & Genus:Ruminococcaceae\_UCG-014\\
-\hline
-Order:Bacteroidales & 40.353733 & -9.241798 & 2.136205 & -4.326270 & 0.0000152 & 0.0002730 & Order:Bacteroidales\\
-\hline
-Genus:Faecalibacterium & 231.079502 & -7.074433 & 1.745612 & -4.052694 & 0.0000506 & 0.0006835 & Genus:Faecalibacterium\\
-\hline
-Genus:Catabacter & 18.045614 & -6.615454 & 1.716150 & -3.854823 & 0.0001158 & 0.0012508 & Genus:Catabacter\\
-\hline
-Genus:Butyricicoccus & 2.392885 & -5.179608 & 2.948055 & -1.756957 & 0.0789251 & 0.3278426 & Genus:Butyricicoccus\\
-\hline
-Order:Gastranaerophilales & 2.067972 & -3.054975 & 2.938641 & -1.039588 & 0.2985315 & 0.7269742 & Order:Gastranaerophilales\\
-\hline
-\end{tabular}
-\end{table}
-
-
 
 ## ANCOM-BC
 
@@ -527,25 +179,8 @@ knitr::kable(head(res$diff_abn)) %>% kableExtra::kable_styling("striped") %>%
 
 In total, this method detects 14 differentially abundant taxa.
 
-## Comparison of the methods
-
-Let's compare results that we got from the methods.
-As we can see from the scatter plot, DESeq2 gives lower p-values than Wilcoxon test. 
 
 
-```r
-mf <- data.frame(df$padj, wilcoxon_p$p_adjusted)
-p <- ggplot(mf, aes(x = df$padj, y = wilcoxon_p$p_adjusted)) +
-       labs(x = "DESeq2 adjusted p-value", y = "Wilcoxon test adjusted p-value") +
-       geom_count() +
- scale_size_area(max_size = 10)
-
-print(p)
-```
-
-![](08-abundance_files/figure-latex/unnamed-chunk-9-1.pdf)<!-- --> 
-
-Prints number of p-values under 0.05
 
 
 ```r
@@ -557,59 +192,15 @@ print(paste0("Wilcoxon test p-values under 0.05: ", sum(wilcoxon_p$p_adjusted<0.
 ```
 
 ```r
-print(paste0("DESeq2 p-values under 0.05: ", sum(df$padj<0.05, na.rm = TRUE), "/", length(df$padj)))
-```
-
-```
-## [1] "DESeq2 p-values under 0.05: 7/54"
-```
-
-```r
 print(paste0("ANCOM p-values under 0.05: ", sum(out$res$diff_abn$patient_statusControl), "/", length(out$res$diff_abn$patient_statusControl)))
 ```
 
 ```
 ## [1] "ANCOM p-values under 0.05: 14/49"
 ```
+## Comparison of the methods
 
-We can also look at the intersection of identified taxa
-
-
-```r
-# to let R check this for us, we need to make sure,
-# to use the same tax names (I call it labels here) everywhere. 
-
-wilcox_labels <- tibble(
-  wilcox_labels_new = rowData(tse_genus)$Genus,
-  taxa = colnames(data.frame(t(assay(tse_genus, "clr"))))
-)
-wilcox_taxa <-wilcoxon_p %>% 
-  left_join(wilcox_labels, by = "taxa") %>%
-  filter(p_adjusted <= 0.05) %>% 
-  .$wilcox_labels_new 
-deseq2_taxa <- filter(df, padj <= 0.05) %>% 
-  .$taxon %>%
-  stringr::str_remove("Genus:") %>%
-  stringr::str_remove("Order:")
-# for ancom we need to assign genus names to ids
-taxid_df <- tibble::rownames_to_column(
-  as.data.frame(rowData(tse)), 
-  "taxid") %>%
-  select(taxid, Genus)
-ancom_taxa <- tibble::rownames_to_column(out$res$diff_abn, "taxid") %>%
-  left_join(taxid_df, by = "taxid") %>%
-  filter(patient_statusControl) %>%
-  .$Genus
-
-# all methods identified in common:
-Reduce(intersect, list(deseq2_taxa, wilcox_taxa, ancom_taxa))
-```
-
-```
-## [1] "Faecalibacterium"                "[Ruminococcus]_gauvreauii_group"
-```
-
-
+TO DO: More difference abundance methods are upcoming. Comparison will be made later. 
 
 ## Comparison of abundance
 
@@ -622,15 +213,20 @@ Let's first gather data about taxa that have highest p-values.
 
 
 ```r
+#we used the results from the wilcoxn test 
+df <- wilcoxon_p
+# renaming row names and taxa column
+df$taxa <- rownames(assay(tse_genus,"clr"))
+
 # There are some taxa that do not include Genus level information. They are
 # excluded from analysis.
 # str_detect finds if the pattern is present in values of "taxon" column.
 # Subset is taken, only those rows are included that do not include the pattern.
-df <- df[ !stringr::str_detect(df$taxon, "Genus:uncultured"), ]
+df <- df[ !stringr::str_detect(df$taxa, "Genus:uncultured"), ]
 
 # Sorts p-values in decreasing order. Takes 3 first ones. Takes those rows that match
 # with p-values. Takes taxa. 
-highest3 <- df[df$padj %in% sort(df$padj, decreasing = TRUE)[1:3], ]$taxon
+highest3 <- df[df$p_adjusted %in% sort(df$p_adjusted, decreasing = TRUE)[1:3], ]$taxa
 
 # From clr transformed table, takes only those taxa that had highest p-values
 highest3 <- assay(tse_genus, "clr")[highest3, ]
@@ -662,7 +258,8 @@ Next, let's do the same but for taxa with lowest p-values.
 ```r
 # Sorts p-values in increasing order. Takes 3rd first ones. Takes those rows that match
 # with p-values. Takes taxa. 
-lowest3 <- df[df$padj %in% sort(df$padj, decreasing = FALSE)[1:3], ]$taxon
+lowest3 <- df[df$p_adjusted %in% sort(df$p_adjusted, decreasing = FALSE)[1:3], ]$taxa
+
 
 # From clr transformed table, takes only those taxa that had lowest p-values
 lowest3 <-assay(tse_genus, "clr")[lowest3, ]
@@ -755,7 +352,7 @@ gridExtra::grid.arrange(
 )
 ```
 
-![](08-abundance_files/figure-latex/unnamed-chunk-14-1.pdf)<!-- --> 
+![](08-abundance_files/figure-latex/unnamed-chunk-11-1.pdf)<!-- --> 
 
 
 We plotted those taxa that have the highest and lowest p values according to DESeq2. Can you create a plot that shows the difference in abundance in "[Ruminococcus]_gauvreauii_group", which is the other taxon that was identified by all tools. Try for yourself! Below you find one way how to do it.
@@ -770,6 +367,6 @@ select(
   geom_boxplot()
 ```
 
-![](08-abundance_files/figure-latex/unnamed-chunk-15-1.pdf)<!-- --> 
+![](08-abundance_files/figure-latex/unnamed-chunk-12-1.pdf)<!-- --> 
 
 

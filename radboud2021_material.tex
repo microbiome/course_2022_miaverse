@@ -132,7 +132,7 @@
 
 \title{Introduction to microbiome data science}
 \author{University of Turku}
-\date{2021-08-26}
+\date{2021-09-14}
 
 \begin{document}
 \maketitle
@@ -234,8 +234,8 @@ often more than one way to solve a given task. It is assumed that you
 have already installed the required software. Do not hesitate to ask
 support from the course assistants.
 
-\hypertarget{monday-12-july-from-raw-sequences-to-ecological-data-analysis}{%
-\section{Monday 12 July: from raw sequences to ecological data analysis}\label{monday-12-july-from-raw-sequences-to-ecological-data-analysis}}
+\hypertarget{day-1-from-raw-sequences-to-ecological-data-analysis}{%
+\section{Day 1: from raw sequences to ecological data analysis}\label{day-1-from-raw-sequences-to-ecological-data-analysis}}
 
 \textbf{Lectures}
 
@@ -257,8 +257,8 @@ support from the course assistants.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{tuesday-13-july---alpha-diversity}{%
-\section{Tuesday 13 July - Alpha diversity}\label{tuesday-13-july---alpha-diversity}}
+\hypertarget{day-2---alpha-diversity}{%
+\section{Day 2 - Alpha diversity}\label{day-2---alpha-diversity}}
 
 \textbf{Demo}
 
@@ -286,8 +286,8 @@ support from the course assistants.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{wednesday-14-july---beta-diversity}{%
-\section{Wednesday 14 July - Beta diversity}\label{wednesday-14-july---beta-diversity}}
+\hypertarget{day-3---beta-diversity}{%
+\section{Day 3 - Beta diversity}\label{day-3---beta-diversity}}
 
 \textbf{Demo}
 
@@ -307,8 +307,8 @@ support from the course assistants.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{thursday-15-july---differential-abundance}{%
-\section{Thursday 15 July - Differential abundance}\label{thursday-15-july---differential-abundance}}
+\hypertarget{day-4--differential-abundance}{%
+\section{Day 4- Differential abundance}\label{day-4--differential-abundance}}
 
 \textbf{Lecture}
 
@@ -336,8 +336,8 @@ support from the course assistants.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{friday-16-july-presentations-closing}{%
-\section{Friday 16 July: Presentations \& closing}\label{friday-16-july-presentations-closing}}
+\hypertarget{day-5-presentations-closing}{%
+\section{Day 5 : Presentations \& closing}\label{day-5-presentations-closing}}
 
 \textbf{Student presentations} on microbiome data analytics
 
@@ -2098,7 +2098,7 @@ variables are associated with each other.
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "Different different cohorts and variance of abundance between samples, p-value: 0.7361"
+## [1] "Different different cohorts and variance of abundance between samples, p-value: 0.7489"
 \end{verbatim}
 
 The cohort variable is not significantly associated with
@@ -2183,239 +2183,10 @@ A dedicated section presenting examples on community typing is in the
   Example \href{08-5-ex-sol-ADHD.html}{Solutions}
 \end{itemize}
 
-\begin{verbatim}
-## Loading required package: SummarizedExperiment
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: MatrixGenerics
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: matrixStats
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'MatrixGenerics'
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:matrixStats':
-## 
-##     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
-##     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
-##     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
-##     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
-##     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
-##     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
-##     colWeightedMeans, colWeightedMedians, colWeightedSds,
-##     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
-##     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
-##     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
-##     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
-##     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
-##     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
-##     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
-##     rowWeightedSds, rowWeightedVars
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: GenomicRanges
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: stats4
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: BiocGenerics
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'BiocGenerics'
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:stats':
-## 
-##     IQR, mad, sd, var, xtabs
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:base':
-## 
-##     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
-##     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
-##     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
-##     union, unique, unsplit, which.max, which.min
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: S4Vectors
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'S4Vectors'
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:base':
-## 
-##     expand.grid, I, unname
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: IRanges
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: GenomeInfoDb
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: Biobase
-\end{verbatim}
-
-\begin{verbatim}
-## Welcome to Bioconductor
-## 
-##     Vignettes contain introductory material; view with
-##     'browseVignettes()'. To cite Bioconductor, see
-##     'citation("Biobase")', and for packages 'citation("pkgname")'.
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'Biobase'
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:MatrixGenerics':
-## 
-##     rowMedians
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:matrixStats':
-## 
-##     anyMissing, rowMedians
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: SingleCellExperiment
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: TreeSummarizedExperiment
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: Biostrings
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: XVector
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'Biostrings'
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:base':
-## 
-##     strsplit
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: ggplot2
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: ggraph
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'dplyr'
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:Biostrings':
-## 
-##     collapse, intersect, setdiff, setequal, union
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:XVector':
-## 
-##     slice
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:Biobase':
-## 
-##     combine
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:GenomicRanges':
-## 
-##     intersect, setdiff, union
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:GenomeInfoDb':
-## 
-##     intersect
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:IRanges':
-## 
-##     collapse, desc, intersect, setdiff, slice, union
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:S4Vectors':
-## 
-##     first, intersect, rename, setdiff, setequal, union
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:BiocGenerics':
-## 
-##     combine, intersect, setdiff, union
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:matrixStats':
-## 
-##     count
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-\end{verbatim}
-
 \hypertarget{differential-abundance-analysis}{%
 \chapter{Differential abundance analysis}\label{differential-abundance-analysis}}
 
-Here, we analyse abundances with three different methods: \textbf{Wilcoxon test} (CLR), \textbf{DESeq2},
+Here, we analyse abundances with two different methods: \textbf{Wilcoxon test} (CLR),
 and \textbf{ANCOM-BC}. All of these test statistical differences between groups.
 We will analyse Genus level abundances.
 
@@ -2518,131 +2289,6 @@ are several other methods as well.
 
 \includegraphics{08-abundance_files/figure-latex/unnamed-chunk-5-1.pdf}
 
-\hypertarget{deseq2}{%
-\section{DESeq2}\label{deseq2}}
-
-Our second analysis method is \href{https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8}{DESeq2}. This method performs the data
-normalization automatically. It also takes care of the p-value
-adjustment, so we don't have to worry about that.
-
-DESeq2 utilizes a negative binomial distribution to detect differences in
-read counts between groups. Its normalization takes care of the
-differences between library sizes and compositions. DESeq2 analysis
-includes multiple steps, but they are done automatically. More
-information can be found, e.g., from Harvard Chan Bioinformatic Core's
-tutorial \href{https://hbctraining.github.io/DGE_workshop/lessons/04_DGE_DESeq2_analysis.html}{Introduction to DGE -
-ARCHIVED}
-
-Now let us show how to do this. First, run the DESeq2 analysis.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Creates DESeq2 object from the data. Uses "patient\_status" to create groups. }
-\NormalTok{ds2 }\OtherTok{\textless{}{-}} \FunctionTok{DESeqDataSet}\NormalTok{(tse\_genus, }\SpecialCharTok{\textasciitilde{}}\NormalTok{patient\_status)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## converting counts to integer mode
-\end{verbatim}
-
-\begin{verbatim}
-## Warning in DESeqDataSet(tse_genus, ~patient_status): 2 duplicate rownames were
-## renamed by adding numbers
-\end{verbatim}
-
-\begin{verbatim}
-## Warning in DESeqDataSet(tse_genus, ~patient_status): some variables in design
-## formula are characters, converting to factors
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Does the analysis}
-\NormalTok{dds }\OtherTok{\textless{}{-}} \FunctionTok{DESeq}\NormalTok{(ds2)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## estimating size factors
-\end{verbatim}
-
-\begin{verbatim}
-## estimating dispersions
-\end{verbatim}
-
-\begin{verbatim}
-## gene-wise dispersion estimates
-\end{verbatim}
-
-\begin{verbatim}
-## mean-dispersion relationship
-\end{verbatim}
-
-\begin{verbatim}
-## final dispersion estimates
-\end{verbatim}
-
-\begin{verbatim}
-## fitting model and testing
-\end{verbatim}
-
-\begin{verbatim}
-## -- replacing outliers and refitting for 11 genes
-## -- DESeq argument 'minReplicatesForReplace' = 7 
-## -- original counts are preserved in counts(dds)
-\end{verbatim}
-
-\begin{verbatim}
-## estimating dispersions
-\end{verbatim}
-
-\begin{verbatim}
-## fitting model and testing
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Gets the results from the object}
-\NormalTok{res }\OtherTok{\textless{}{-}} \FunctionTok{results}\NormalTok{(dds)}
-
-\CommentTok{\# Creates a data frame from results}
-\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(res)}
-
-\CommentTok{\# Adds taxon column that includes names of taxa}
-\NormalTok{df}\SpecialCharTok{$}\NormalTok{taxon }\OtherTok{\textless{}{-}} \FunctionTok{rownames}\NormalTok{(df)}
-
-\CommentTok{\# Orders the rows of data frame in increasing order firstly based on column}
-\CommentTok{\# "log2FoldChange" and secondly based on "padj" column}
-\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(log2FoldChange, padj)}
-
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}\FunctionTok{head}\NormalTok{(df)) }\SpecialCharTok{\%\textgreater{}\%} 
-\NormalTok{  kableExtra}\SpecialCharTok{::}\FunctionTok{kable\_styling}\NormalTok{(}\StringTok{"striped"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-\NormalTok{  kableExtra}\SpecialCharTok{::}\FunctionTok{scroll\_box}\NormalTok{(}\AttributeTok{width =} \StringTok{"100\%"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{table}
-\centering
-\begin{tabular}{l|r|r|r|r|r|r|l}
-\hline
-  & baseMean & log2FoldChange & lfcSE & stat & pvalue & padj & taxon\\
-\hline
-Genus:Ruminococcaceae\_UCG-014 & 22.548297 & -24.891268 & 2.460684 & -10.115589 & 0.0000000 & 0.0000000 & Genus:Ruminococcaceae\_UCG-014\\
-\hline
-Order:Bacteroidales & 40.353733 & -9.241798 & 2.136205 & -4.326270 & 0.0000152 & 0.0002730 & Order:Bacteroidales\\
-\hline
-Genus:Faecalibacterium & 231.079502 & -7.074433 & 1.745612 & -4.052694 & 0.0000506 & 0.0006835 & Genus:Faecalibacterium\\
-\hline
-Genus:Catabacter & 18.045614 & -6.615454 & 1.716150 & -3.854823 & 0.0001158 & 0.0012508 & Genus:Catabacter\\
-\hline
-Genus:Butyricicoccus & 2.392885 & -5.179608 & 2.948055 & -1.756957 & 0.0789251 & 0.3278426 & Genus:Butyricicoccus\\
-\hline
-Order:Gastranaerophilales & 2.067972 & -3.054975 & 2.938641 & -1.039588 & 0.2985315 & 0.7269742 & Order:Gastranaerophilales\\
-\hline
-\end{tabular}
-\end{table}
-
 \hypertarget{ancom-bc}{%
 \section{ANCOM-BC}\label{ancom-bc}}
 
@@ -2724,28 +2370,6 @@ Here, we can find all differentially abundant taxa. Below we show the first 6 en
 
 In total, this method detects 14 differentially abundant taxa.
 
-\hypertarget{comparison-of-the-methods}{%
-\section{Comparison of the methods}\label{comparison-of-the-methods}}
-
-Let's compare results that we got from the methods.
-As we can see from the scatter plot, DESeq2 gives lower p-values than Wilcoxon test.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{mf }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{padj, wilcoxon\_p}\SpecialCharTok{$}\NormalTok{p\_adjusted)}
-\NormalTok{p }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(mf, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{padj, }\AttributeTok{y =}\NormalTok{ wilcoxon\_p}\SpecialCharTok{$}\NormalTok{p\_adjusted)) }\SpecialCharTok{+}
-       \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"DESeq2 adjusted p{-}value"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Wilcoxon test adjusted p{-}value"}\NormalTok{) }\SpecialCharTok{+}
-       \FunctionTok{geom\_count}\NormalTok{() }\SpecialCharTok{+}
- \FunctionTok{scale\_size\_area}\NormalTok{(}\AttributeTok{max\_size =} \DecValTok{10}\NormalTok{)}
-
-\FunctionTok{print}\NormalTok{(p)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics{08-abundance_files/figure-latex/unnamed-chunk-9-1.pdf}
-
-Prints number of p-values under 0.05
-
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{print}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"Wilcoxon test p{-}values under 0.05: "}\NormalTok{, }\FunctionTok{sum}\NormalTok{(wilcoxon\_p}\SpecialCharTok{$}\NormalTok{p\_adjusted}\SpecialCharTok{\textless{}}\FloatTok{0.05}\NormalTok{, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{), }\StringTok{"/"}\NormalTok{, }\FunctionTok{length}\NormalTok{(wilcoxon\_p}\SpecialCharTok{$}\NormalTok{p\_adjusted)))}
@@ -2758,16 +2382,6 @@ Prints number of p-values under 0.05
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{print}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"DESeq2 p{-}values under 0.05: "}\NormalTok{, }\FunctionTok{sum}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{padj}\SpecialCharTok{\textless{}}\FloatTok{0.05}\NormalTok{, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{), }\StringTok{"/"}\NormalTok{, }\FunctionTok{length}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{padj)))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] "DESeq2 p-values under 0.05: 7/54"
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{print}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"ANCOM p{-}values under 0.05: "}\NormalTok{, }\FunctionTok{sum}\NormalTok{(out}\SpecialCharTok{$}\NormalTok{res}\SpecialCharTok{$}\NormalTok{diff\_abn}\SpecialCharTok{$}\NormalTok{patient\_statusControl), }\StringTok{"/"}\NormalTok{, }\FunctionTok{length}\NormalTok{(out}\SpecialCharTok{$}\NormalTok{res}\SpecialCharTok{$}\NormalTok{diff\_abn}\SpecialCharTok{$}\NormalTok{patient\_statusControl)))}
 \end{Highlighting}
 \end{Shaded}
@@ -2776,43 +2390,10 @@ Prints number of p-values under 0.05
 ## [1] "ANCOM p-values under 0.05: 14/49"
 \end{verbatim}
 
-We can also look at the intersection of identified taxa
+\hypertarget{comparison-of-the-methods}{%
+\section{Comparison of the methods}\label{comparison-of-the-methods}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# to let R check this for us, we need to make sure,}
-\CommentTok{\# to use the same tax names (I call it labels here) everywhere. }
-
-\NormalTok{wilcox\_labels }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
-  \AttributeTok{wilcox\_labels\_new =} \FunctionTok{rowData}\NormalTok{(tse\_genus)}\SpecialCharTok{$}\NormalTok{Genus,}
-  \AttributeTok{taxa =} \FunctionTok{colnames}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{assay}\NormalTok{(tse\_genus, }\StringTok{"clr"}\NormalTok{))))}
-\NormalTok{)}
-\NormalTok{wilcox\_taxa }\OtherTok{\textless{}{-}}\NormalTok{wilcoxon\_p }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{left\_join}\NormalTok{(wilcox\_labels, }\AttributeTok{by =} \StringTok{"taxa"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{filter}\NormalTok{(p\_adjusted }\SpecialCharTok{\textless{}=} \FloatTok{0.05}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-\NormalTok{  .}\SpecialCharTok{$}\NormalTok{wilcox\_labels\_new }
-\NormalTok{deseq2\_taxa }\OtherTok{\textless{}{-}} \FunctionTok{filter}\NormalTok{(df, padj }\SpecialCharTok{\textless{}=} \FloatTok{0.05}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-\NormalTok{  .}\SpecialCharTok{$}\NormalTok{taxon }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{  stringr}\SpecialCharTok{::}\FunctionTok{str\_remove}\NormalTok{(}\StringTok{"Genus:"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{  stringr}\SpecialCharTok{::}\FunctionTok{str\_remove}\NormalTok{(}\StringTok{"Order:"}\NormalTok{)}
-\CommentTok{\# for ancom we need to assign genus names to ids}
-\NormalTok{taxid\_df }\OtherTok{\textless{}{-}}\NormalTok{ tibble}\SpecialCharTok{::}\FunctionTok{rownames\_to\_column}\NormalTok{(}
-  \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{rowData}\NormalTok{(tse)), }
-  \StringTok{"taxid"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{select}\NormalTok{(taxid, Genus)}
-\NormalTok{ancom\_taxa }\OtherTok{\textless{}{-}}\NormalTok{ tibble}\SpecialCharTok{::}\FunctionTok{rownames\_to\_column}\NormalTok{(out}\SpecialCharTok{$}\NormalTok{res}\SpecialCharTok{$}\NormalTok{diff\_abn, }\StringTok{"taxid"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{left\_join}\NormalTok{(taxid\_df, }\AttributeTok{by =} \StringTok{"taxid"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{filter}\NormalTok{(patient\_statusControl) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{  .}\SpecialCharTok{$}\NormalTok{Genus}
-
-\CommentTok{\# all methods identified in common:}
-\FunctionTok{Reduce}\NormalTok{(intersect, }\FunctionTok{list}\NormalTok{(deseq2\_taxa, wilcox\_taxa, ancom\_taxa))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] "Faecalibacterium"                "[Ruminococcus]_gauvreauii_group"
-\end{verbatim}
+TO DO: More difference abundance methods are upcoming. Comparison will be made later.
 
 \hypertarget{comparison-of-abundance}{%
 \section{Comparison of abundance}\label{comparison-of-abundance}}
@@ -2826,15 +2407,20 @@ Let's first gather data about taxa that have highest p-values.
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\#we used the results from the wilcoxn test }
+\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ wilcoxon\_p}
+\CommentTok{\# renaming row names and taxa column}
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{taxa }\OtherTok{\textless{}{-}} \FunctionTok{rownames}\NormalTok{(}\FunctionTok{assay}\NormalTok{(tse\_genus,}\StringTok{"clr"}\NormalTok{))}
+
 \CommentTok{\# There are some taxa that do not include Genus level information. They are}
 \CommentTok{\# excluded from analysis.}
 \CommentTok{\# str\_detect finds if the pattern is present in values of "taxon" column.}
 \CommentTok{\# Subset is taken, only those rows are included that do not include the pattern.}
-\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ df[ }\SpecialCharTok{!}\NormalTok{stringr}\SpecialCharTok{::}\FunctionTok{str\_detect}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{taxon, }\StringTok{"Genus:uncultured"}\NormalTok{), ]}
+\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ df[ }\SpecialCharTok{!}\NormalTok{stringr}\SpecialCharTok{::}\FunctionTok{str\_detect}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{taxa, }\StringTok{"Genus:uncultured"}\NormalTok{), ]}
 
 \CommentTok{\# Sorts p{-}values in decreasing order. Takes 3 first ones. Takes those rows that match}
 \CommentTok{\# with p{-}values. Takes taxa. }
-\NormalTok{highest3 }\OtherTok{\textless{}{-}}\NormalTok{ df[df}\SpecialCharTok{$}\NormalTok{padj }\SpecialCharTok{\%in\%} \FunctionTok{sort}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{padj, }\AttributeTok{decreasing =} \ConstantTok{TRUE}\NormalTok{)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{], ]}\SpecialCharTok{$}\NormalTok{taxon}
+\NormalTok{highest3 }\OtherTok{\textless{}{-}}\NormalTok{ df[df}\SpecialCharTok{$}\NormalTok{p\_adjusted }\SpecialCharTok{\%in\%} \FunctionTok{sort}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{p\_adjusted, }\AttributeTok{decreasing =} \ConstantTok{TRUE}\NormalTok{)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{], ]}\SpecialCharTok{$}\NormalTok{taxa}
 
 \CommentTok{\# From clr transformed table, takes only those taxa that had highest p{-}values}
 \NormalTok{highest3 }\OtherTok{\textless{}{-}} \FunctionTok{assay}\NormalTok{(tse\_genus, }\StringTok{"clr"}\NormalTok{)[highest3, ]}
@@ -2867,7 +2453,8 @@ Next, let's do the same but for taxa with lowest p-values.
 \begin{Highlighting}[]
 \CommentTok{\# Sorts p{-}values in increasing order. Takes 3rd first ones. Takes those rows that match}
 \CommentTok{\# with p{-}values. Takes taxa. }
-\NormalTok{lowest3 }\OtherTok{\textless{}{-}}\NormalTok{ df[df}\SpecialCharTok{$}\NormalTok{padj }\SpecialCharTok{\%in\%} \FunctionTok{sort}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{padj, }\AttributeTok{decreasing =} \ConstantTok{FALSE}\NormalTok{)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{], ]}\SpecialCharTok{$}\NormalTok{taxon}
+\NormalTok{lowest3 }\OtherTok{\textless{}{-}}\NormalTok{ df[df}\SpecialCharTok{$}\NormalTok{p\_adjusted }\SpecialCharTok{\%in\%} \FunctionTok{sort}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{p\_adjusted, }\AttributeTok{decreasing =} \ConstantTok{FALSE}\NormalTok{)[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{], ]}\SpecialCharTok{$}\NormalTok{taxa}
+
 
 \CommentTok{\# From clr transformed table, takes only those taxa that had lowest p{-}values}
 \NormalTok{lowest3 }\OtherTok{\textless{}{-}}\FunctionTok{assay}\NormalTok{(tse\_genus, }\StringTok{"clr"}\NormalTok{)[lowest3, ]}
@@ -2962,7 +2549,7 @@ Then we can plot these six different taxa. Let's arrange them into the same pict
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{08-abundance_files/figure-latex/unnamed-chunk-14-1.pdf}
+\includegraphics{08-abundance_files/figure-latex/unnamed-chunk-11-1.pdf}
 
 We plotted those taxa that have the highest and lowest p values according to DESeq2. Can you create a plot that shows the difference in abundance in "{[}Ruminococcus{]}\_gauvreauii\_group", which is the other taxon that was identified by all tools. Try for yourself! Below you find one way how to do it.
 
@@ -2977,7 +2564,7 @@ We plotted those taxa that have the highest and lowest p values according to DES
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{08-abundance_files/figure-latex/unnamed-chunk-15-1.pdf}
+\includegraphics{08-abundance_files/figure-latex/unnamed-chunk-12-1.pdf}
 
 \hypertarget{study-material}{%
 \chapter{Study material}\label{study-material}}
