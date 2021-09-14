@@ -1,0 +1,185 @@
+# Speed comparisons between `TreeSE` and `phyloseq`
+
+## Data set inspection
+
+Conversion from `tse` to `pseq` objects employed the following command:
+
+```{r}
+# conversion
+pseq <- makePhyloseqFromTreeSummarizedExperiment(tse)
+```
+
+### mia data sets
+
+```{r}
+# load from mia
+library(mia)
+data_sets <- c("GlobalPatterns", "soilrep", "esophagus", "enterotype")
+mapply(data, list = data_sets, package = "mia")
+tse <- GlobalPatterns
+```
+
+```{r}
+# load from phyloseq
+library(phyloseq)
+data_sets <- c("GlobalPatterns", "soilrep", "esophagus", "enterotype")
+mapply(data, list = data_sets, package = "phyloseq")
+pseq <- GlobalPatterns
+```
+
+### microbiome data sets
+
+```{r}
+# load from microbiomeDataSets
+library(microbiomeDataSets)
+availableDataSets()
+tse <- HintikkaXOData()
+```
+
+### curatedMetagenomicData data sets
+
+```{r}
+# load from curatedMetagenomicData
+library(curatedMetagenomicData)
+tse <- curatedMetagenomicData("AsnicarF_2021", dryrun = FALSE, counts = TRUE)
+tse <- tse[[1]]
+```
+
+## Speed comparison of melting
+
+```{r}
+# melt tse
+start.time1 <- Sys.time()
+molten_tse <- mia::meltAssay(tse,
+                       abund_values = "counts",
+                       add_row_data = TRUE,
+                       add_col_data = TRUE)
+end.time1 <- Sys.time()
+diff_tse <- end.time1 - start.time1
+diff_tse
+```
+
+```{r}
+# melt pseq
+start.time2 <- Sys.time()
+molten_pseq <- phyloseq::psmelt(pseq)
+end.time2 <- Sys.time()
+diff_pseq <- end.time2 - start.time2
+diff_pseq
+```
+
+```{r}
+# absolute difference
+abs_diff <- diff_pseq - diff_tse
+abs_diff
+```
+
+```{r}
+# sanity check
+colnames(molten_tse)
+colnames(molten_pseq)
+dim(molten_tse)
+dim(molten_pseq)
+```
+
+## Speed comparison of transformation
+
+```{r}
+# transform tse
+start.time1 <- Sys.time()
+trans_tse <- mia::transformSamples(tse,
+                                  method = "log10",
+                                  pseudocount = 1)
+end.time1 <- Sys.time()
+diff_tse <- end.time1 - start.time1
+diff_tse
+```
+
+```{r}
+# transform pseq
+start.time2 <- Sys.time()
+trans_pseq <- microbiome::transform(pseq,
+                                    transform = "log10p",
+                                    target = "sample")
+end.time2 <- Sys.time()
+diff_pseq <- end.time2 - start.time2
+diff_pseq
+```
+
+```{r}
+# absolute difference
+abs_diff <- diff_pseq - diff_tse
+abs_diff
+```
+
+```{r}
+# sanity check
+# sanity check here
+```
+
+## Speed comparison of agglomeration
+
+```{r}
+# agglomerate tse
+start.time1 <- Sys.time()
+tse_phylum <- agglomerateByRank(tse,
+                               rank = "Phylum",
+                               na.rm = TRUE)
+end.time1 <- Sys.time()
+diff_tse <- end.time1 - start.time1
+diff_tse
+```
+
+```{r}
+# agglomerate pseq
+start.time2 <- Sys.time()
+pseq_phylum <- phyloseq::tax_glom(pseq,
+                                  taxrank = "Phylum")
+# na.rm = TRUE by default in tax_glom
+end.time2 <- Sys.time()
+diff_pseq <- end.time2 - start.time2
+diff_pseq
+```
+
+```{r}
+# absolute difference
+abs_diff <- diff_pseq - diff_tse
+abs_diff
+```
+
+```{r}
+# sanity chek
+# sanity check here
+colnames(tax_table(pseq))
+colnames(tax_table(pseq_phylum))
+```
+
+## Speed comparison of alpha diversity estimation
+
+```{r}
+# estimate alpha diversity in tse
+start.time1 <- Sys.time()
+alpha_tse <- mia::estimateDiversity(tse, 
+                             abund_values = "counts",
+                             index = "shannon", 
+                             name = "shannon")
+end.time1 <- Sys.time()
+diff_tse <- end.time1 - start.time1
+diff_tse
+```
+
+```{r}
+# estimate alpha diversity in pseq
+start.time2 <- Sys.time()
+alpha_pseq <- microbiome::diversity(pseq,
+                     index = "shannon")
+end.time2 <- Sys.time()
+diff_pseq <- end.time2 - start.time2
+diff_pseq
+```
+
+```{r}
+# sanity check
+head(colData(alpha_tse)$shannon)
+head(alpha_pseq$shannon)
+```
