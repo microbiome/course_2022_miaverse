@@ -175,11 +175,10 @@ library(vegan)
 ```
 
 ```{r}
-# estimate beta diversity in tse
+# diversity tse
 start.time1 <- Sys.time()
 
-tse <- runMDS(tse, FUN = vegan::vegdist, name = "MDS_BC", exprs_values = "counts")
-
+beta_tse <- runMDS(tse, FUN = vegan::vegdist, name = "MDS_BC", exprs_values = "counts")
 p <- plotReducedDim(tse, "MDS_BC", colour_by = "SampleType")
 
 print(p)
@@ -190,11 +189,11 @@ diff_tse
 ```
 
 ```{r}
-# estimate beta diversity in pseq
+# diversity pseq
 start.time2 <- Sys.time()
 
-GP.ord <- ordinate(pseq, "MDS", "bray")
-p = plot_ordination(pseq, GP.ord, type = "samples", color = "SampleType")
+beta_pseq <- phyloseq::ordinate(pseq, "MDS", "bray")
+p <- plot_ordination(pseq, beta_pseq, type = "samples", color = "SampleType")
 
 print(p)
 
