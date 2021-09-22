@@ -18,6 +18,7 @@ The analyzed data sets include:
 * SilvermanAGutData
 * SongQAData
 * SprockettTHData
+* GrieneisenTSData
 
 ```{r}
 # call packages to load data sets
@@ -36,7 +37,7 @@ data_sets <- c("AsnicarF_2017.relative_abundance", "GlobalPatterns", "VincentC_2
 ```
 
 ```{r}
-# define matrices for data on dimensions and excution times
+# define variables to work with
 cur_it <- 0
 tse <- NA
 pseq <- NA
@@ -56,15 +57,20 @@ for (data_set in data_sets) {
     
     mapply(data, list = data_set, package = "mia")
     tse <- eval(parse(text = data_set))
+    assay_values <- "counts"
     mapply(data, list = data_set, package = "phyloseq")
     pseq <- eval(parse(text = data_set))
-    assay_values <- "counts"
       
   } else if (data_set %in% c("SilvermanAGutData", "SongQAData", "SprockettTHData", "GrieneisenTSData")) {
     
     tse <- eval((parse(text = paste0(data_set, "()"))))
-    pseq <- makePhyloseqFromTreeSummarizedExperiment(tse)
+    
+    if (data_set == "GrieneisenTSData") {
+      rowData(tse) <- DataFrame(lapply(rowData(tse), unfactor))
+    }
+    
     assay_values <- "counts"
+    pseq <- makePhyloseqFromTreeSummarizedExperiment(tse)
     
   } else if (data_set %in% c("AsnicarF_2017.relative_abundance", "VincentC_2016")) {
     
