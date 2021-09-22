@@ -18,5 +18,5 @@ rmd_files:
   - 08-abundance.Rmd
   - 09-material.Rmd
   - 10-misc.Rmd
-  - 11-annex.Rmd
   - 12-Solutions.Rmd
+  - 13-annex.Rmd
