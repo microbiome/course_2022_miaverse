@@ -167,7 +167,7 @@ for (data_set in data_sets) {
     # test beta diversity estimation for pseq
     start.time2 <- Sys.time()
     beta_pseq <- phyloseq::ordinate(pseq, "MDS", "bray")
-    plot_ordination(pseq, beta_pseq, type = "samples")
+    phyloseq::plot_ordination(pseq, beta_pseq, type = "samples")
     end.time2 <- Sys.time()
     diff_pseq[cur_it, 5] <- end.time2 - start.time2
     
