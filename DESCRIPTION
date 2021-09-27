@@ -42,7 +42,14 @@ Suggests:
     TreeSummarizedExperiment,
     uwot,
     phyloseq,
-    tinytex
+    tinytex,
+    pheatmap,
+    philentropy,
+    cowplot,
+    RColorBrewer,
+    cluster,
+    factoextra,
+    grid
 Remotes:
     github::microbiome/mia,
     github::microbiome/miaViz
