@@ -132,7 +132,7 @@
 
 \title{Introduction to microbiome data science}
 \author{University of Turku}
-\date{2021-09-14}
+\date{2021-09-27}
 
 \begin{document}
 \maketitle
@@ -2098,7 +2098,7 @@ variables are associated with each other.
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "Different different cohorts and variance of abundance between samples, p-value: 0.739"
+## [1] "Different different cohorts and variance of abundance between samples, p-value: 0.7412"
 \end{verbatim}
 
 The cohort variable is not significantly associated with
@@ -2676,6 +2676,727 @@ SingleCellExperiment
 \item
   \href{https://openresearchlabs.github.io/publications/papers/2018-Shetty-Lahti-MDS.pdf}{Microbiome Data Science. Shetty \& Lahti, 2019}
 \end{itemize}
+
+\hypertarget{additional-community-typing}{%
+\chapter{Additional Community Typing}\label{additional-community-typing}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load data}
+\FunctionTok{library}\NormalTok{(mia)}
+\FunctionTok{data}\NormalTok{(enterotype)}
+\NormalTok{tse }\OtherTok{\textless{}{-}}\NormalTok{ enterotype}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{community-composition}{%
+\section{Community composition}\label{community-composition}}
+
+\hypertarget{composition-barplot}{%
+\subsection{Composition barplot}\label{composition-barplot}}
+
+The typical way to visualise the microbiome compositions is by using a composition barplot.
+In the following, we calculate the relative abundances and the top 10 taxa. The barplot is ordered by ``Bacteroidetes'':
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(miaViz)}
+
+\CommentTok{\# Remove unwanted taxon}
+\NormalTok{tse }\OtherTok{\textless{}{-}} \FunctionTok{subsetTaxa}\NormalTok{(tse, }\FunctionTok{rownames}\NormalTok{(tse) }\SpecialCharTok{!=} \StringTok{"{-}1"}\NormalTok{)}
+\CommentTok{\# Only consider Sanger technique}
+\NormalTok{mat }\OtherTok{\textless{}{-}} \FunctionTok{subsetSamples}\NormalTok{(tse, }\FunctionTok{colData}\NormalTok{(tse)}\SpecialCharTok{$}\NormalTok{SeqTech }\SpecialCharTok{==} \StringTok{"Sanger"}\NormalTok{)}
+
+\CommentTok{\# Get top taxa}
+\NormalTok{rel\_taxa }\OtherTok{\textless{}{-}} \FunctionTok{getTopTaxa}\NormalTok{(tse, }\AttributeTok{top =} \DecValTok{10}\NormalTok{, }\AttributeTok{abund\_values =} \StringTok{"counts"}\NormalTok{)}
+
+\CommentTok{\# Take only the top taxa}
+\NormalTok{mat }\OtherTok{\textless{}{-}} \FunctionTok{subsetTaxa}\NormalTok{(mat, }\FunctionTok{is.element}\NormalTok{(}\FunctionTok{rownames}\NormalTok{(tse), rel\_taxa))}
+
+\CommentTok{\# Visualise composition barplot, with samples order by "Bacteroides"}
+\FunctionTok{plotAbundance}\NormalTok{(mat, }\AttributeTok{abund\_values =} \StringTok{"counts"}\NormalTok{,}
+              \AttributeTok{order\_rank\_by =} \StringTok{"abund"}\NormalTok{, }\AttributeTok{order\_sample\_by =} \StringTok{"Bacteroides"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+\hypertarget{composition-heatmap}{%
+\subsection{Composition heatmap}\label{composition-heatmap}}
+
+Community composition can be visualised with a heatmap. The colour of each intersection point represents the abundance of a taxon in a specific sample.
+
+Here, the CLR + Z-transformed abundances are shown.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(pheatmap)}
+\FunctionTok{library}\NormalTok{(grid)}
+\FunctionTok{library}\NormalTok{(RColorBrewer)}
+\CommentTok{\# CLR and Z transforms}
+\NormalTok{mat }\OtherTok{\textless{}{-}} \FunctionTok{transformCounts}\NormalTok{(tse, }\AttributeTok{abund\_values =} \StringTok{"counts"}\NormalTok{, }\AttributeTok{method =} \StringTok{"clr"}\NormalTok{, }\AttributeTok{pseudocount =} \DecValTok{1}\NormalTok{)}
+\NormalTok{mat }\OtherTok{\textless{}{-}} \FunctionTok{transformFeatures}\NormalTok{(mat, }\AttributeTok{abund\_values =} \StringTok{"clr"}\NormalTok{, }\AttributeTok{method =} \StringTok{"z"}\NormalTok{)}
+\CommentTok{\# Take only the top taxa}
+\NormalTok{mat }\OtherTok{\textless{}{-}} \FunctionTok{subsetTaxa}\NormalTok{(mat, }\FunctionTok{is.element}\NormalTok{(}\FunctionTok{rownames}\NormalTok{(tse), rel\_taxa))}
+
+\CommentTok{\# For annotating heat map}
+\NormalTok{SeqTechs }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\StringTok{"SeqTech"} \OtherTok{=} \FunctionTok{colData}\NormalTok{(mat)}\SpecialCharTok{$}\NormalTok{SeqTech)}
+\FunctionTok{rownames}\NormalTok{(SeqTechs) }\OtherTok{\textless{}{-}} \FunctionTok{colData}\NormalTok{(mat)}\SpecialCharTok{$}\NormalTok{Sample\_ID}
+\CommentTok{\# count matrix for pheatmap}
+\NormalTok{mat }\OtherTok{\textless{}{-}} \FunctionTok{assays}\NormalTok{(mat)}\SpecialCharTok{$}\NormalTok{z}
+
+\CommentTok{\# Make grid for heatmap}
+\NormalTok{breaks }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{10}\NormalTok{)}
+\FunctionTok{setHook}\NormalTok{(}\StringTok{"grid.newpage"}\NormalTok{, }\ControlFlowTok{function}\NormalTok{() }\FunctionTok{pushViewport}\NormalTok{(}\FunctionTok{viewport}\NormalTok{(}\AttributeTok{x =} \DecValTok{1}\NormalTok{, }\AttributeTok{y =} \DecValTok{1}\NormalTok{, }\AttributeTok{width =} \FloatTok{0.9}\NormalTok{, }
+                                                         \AttributeTok{height =} \FloatTok{0.9}\NormalTok{, }\AttributeTok{name =} \StringTok{"vp"}\NormalTok{, }
+                                                         \AttributeTok{just =} \FunctionTok{c}\NormalTok{(}\StringTok{"right"}\NormalTok{,}\StringTok{"top"}\NormalTok{))), }
+        \AttributeTok{action =} \StringTok{"prepend"}\NormalTok{)}
+\FunctionTok{pheatmap}\NormalTok{(mat, }\AttributeTok{color =} \FunctionTok{rev}\NormalTok{(}\FunctionTok{brewer.pal}\NormalTok{(}\DecValTok{9}\NormalTok{, }\StringTok{"RdBu"}\NormalTok{)), }\AttributeTok{breaks =}\NormalTok{ breaks, }\AttributeTok{main =} \StringTok{"SeqTechs"}\NormalTok{, }\AttributeTok{treeheight\_row =} \DecValTok{0}\NormalTok{, }\AttributeTok{treeheight\_col =} \DecValTok{0}\NormalTok{, }\AttributeTok{show\_colnames =} \DecValTok{0}\NormalTok{, }\AttributeTok{annotation\_col =}\NormalTok{ SeqTechs, }\AttributeTok{cluster\_cols =}\NormalTok{ F)}
+\FunctionTok{setHook}\NormalTok{(}\StringTok{"grid.newpage"}\NormalTok{, }\ConstantTok{NULL}\NormalTok{, }\StringTok{"replace"}\NormalTok{)}
+\FunctionTok{grid.text}\NormalTok{(}\StringTok{"Sample"}\NormalTok{, }\AttributeTok{x =} \FloatTok{0.39}\NormalTok{, }\AttributeTok{y =} \SpecialCharTok{{-}}\FloatTok{0.04}\NormalTok{, }\AttributeTok{gp =} \FunctionTok{gpar}\NormalTok{(}\AttributeTok{fontsize =} \DecValTok{16}\NormalTok{))}
+\FunctionTok{grid.text}\NormalTok{(}\StringTok{"Genus"}\NormalTok{, }\AttributeTok{x =} \SpecialCharTok{{-}}\FloatTok{0.04}\NormalTok{, }\AttributeTok{y =} \FloatTok{0.47}\NormalTok{, }\AttributeTok{rot =} \DecValTok{90}\NormalTok{, }\AttributeTok{gp =} \FunctionTok{gpar}\NormalTok{(}\AttributeTok{fontsize =} \DecValTok{16}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\hypertarget{cluster-into-csts}{%
+\section{Cluster into CSTs}\label{cluster-into-csts}}
+
+The burden of specifying the number of clusters falls on the researcher. To help make an informed decision, we turn to previously established methods for doing so. In this section we introduce three such methods (aside from DMM analysis) to cluster similar samples. They include the \href{https://uc-r.github.io/kmeans_clustering}{Elbow Method, Silhouette Method, and Gap Statistic Method}. All of them will utilise the \href{https://uc-r.github.io/kmeans_clustering}{`kmeans'} algorithm which essentially assigns clusters and minimises the distance within clusters (a sum of squares calculation). The default distance metric used is the Euclidean metric.
+
+The scree plot allows us to see how much of the variance is captured by each dimension in the MDS ordination.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2); th }\OtherTok{\textless{}{-}} \FunctionTok{theme\_bw}\NormalTok{()}
+
+\CommentTok{\# reset data}
+\NormalTok{tse }\OtherTok{\textless{}{-}}\NormalTok{ enterotype}
+
+\CommentTok{\# MDS analysis with the first 20 dimensions}
+\NormalTok{tse  }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{runMDS}\NormalTok{(tse, }\AttributeTok{FUN =}\NormalTok{ vegan}\SpecialCharTok{::}\NormalTok{vegdist, }\AttributeTok{method =} \StringTok{"bray"}\NormalTok{, }
+                       \AttributeTok{name =} \StringTok{"MDS\_BC"}\NormalTok{, }\AttributeTok{exprs\_values =} \StringTok{"counts"}\NormalTok{, }\AttributeTok{ncomponents =} \DecValTok{20}\NormalTok{)}
+\NormalTok{ord  }\OtherTok{\textless{}{-}} \FunctionTok{reducedDim}\NormalTok{(tse, }\StringTok{"MDS\_BC"}\NormalTok{, }\AttributeTok{withDimnames =} \ConstantTok{TRUE}\NormalTok{)}
+\CommentTok{\# retrieve eigenvalues}
+\NormalTok{eigs }\OtherTok{\textless{}{-}} \FunctionTok{attr}\NormalTok{(ord, }\StringTok{"eig"}\NormalTok{)}
+
+\CommentTok{\# variance in each of the axes}
+\NormalTok{var }\OtherTok{\textless{}{-}}\NormalTok{ eigs }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(eigs)}
+\CommentTok{\# first 12 values}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{x =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{12}\NormalTok{), }\AttributeTok{y =}\NormalTok{ var[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{12}\NormalTok{])}
+
+\CommentTok{\# create scree plot}
+\NormalTok{p }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(x, y)) }\SpecialCharTok{+}
+     \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat=}\StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+     \FunctionTok{xlab}\NormalTok{(}\StringTok{"Principal Component"}\NormalTok{) }\SpecialCharTok{+}
+     \FunctionTok{ylab}\NormalTok{(}\StringTok{"Variance"}\NormalTok{) }\SpecialCharTok{+}
+     \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Scree Plot"}\NormalTok{)}
+\NormalTok{p}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/scree-1.pdf}
+
+From the scree plot (above), we can see that the two principal dimensions can account for 68\% of the total variation, but at least the top 4 eigenvalues are considerable. Dimensions beyond 3 and 4 may be useful so let's try to remove the less relevant dimensions.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# histogram of MDS eigenvalues from the fifth dimension onward}
+\NormalTok{h }\OtherTok{\textless{}{-}} \FunctionTok{hist}\NormalTok{(eigs[}\DecValTok{5}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(eigs)], }\DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(h}\SpecialCharTok{$}\NormalTok{mids, h}\SpecialCharTok{$}\NormalTok{count, }\AttributeTok{log =} \StringTok{"y"}\NormalTok{, }\AttributeTok{type =} \StringTok{"h"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{10}\NormalTok{, }\AttributeTok{lend =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+As you can see, dimensions 5, 6, and 7 still stand out so we will include 7 MDS dimensions.
+
+\hypertarget{elbow-method}{%
+\subsection{Elbow Method}\label{elbow-method}}
+
+This method graphs the sum of the sum of squares for each \(k\) (number of clusters), where \(k\) ranges between 1 and 10. Where the bend or `elbow' occurs is the optimal value of \(k\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(factoextra)}
+
+\CommentTok{\# take only first 7 dimensions}
+\NormalTok{NDIM }\OtherTok{\textless{}{-}} \DecValTok{7}
+\NormalTok{x    }\OtherTok{\textless{}{-}}\NormalTok{ ord[, }\DecValTok{1}\SpecialCharTok{:}\NormalTok{NDIM]}
+
+\CommentTok{\# Elbow Method}
+\NormalTok{factoextra}\SpecialCharTok{::}\FunctionTok{fviz\_nbclust}\NormalTok{(x, kmeans, }\AttributeTok{method =} \StringTok{"wss"}\NormalTok{) }\SpecialCharTok{+}
+                         \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =} \DecValTok{3}\NormalTok{, }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+                         \FunctionTok{labs}\NormalTok{(}\AttributeTok{subtitle =} \StringTok{"Elbow Method"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/elbow-1.pdf}
+
+As you can see, the bend occurs at \(k=3\), implying there are three clusters present in the enterotype data.
+
+\hypertarget{silhouette-method}{%
+\subsection{Silhouette Method}\label{silhouette-method}}
+
+This method on the otherhand returns a width for each \(k\). In this case, we want the \(k\) that maximises the width.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Silhouette method}
+\NormalTok{factoextra}\SpecialCharTok{::}\FunctionTok{fviz\_nbclust}\NormalTok{(x, kmeans, }\AttributeTok{method =} \StringTok{"silhouette"}\NormalTok{) }\SpecialCharTok{+}
+                         \FunctionTok{labs}\NormalTok{(}\AttributeTok{subtitle =} \StringTok{"Silhouette method"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/silhouette-1.pdf}
+
+The graph shows the maximum occurring at \(k=2\). \(k=3\) is also strongly suggested by the plot and is consistent with what we obtained from the elbow method.
+
+\hypertarget{gap-statistic-method}{%
+\subsection{Gap-Statistic Method}\label{gap-statistic-method}}
+
+The Gap-Statistic Method is the most complicated among the methods discussed here. In the plot produced, we want the \(k\) value that maximises the output (local and global maxima), but we also want to pay attention to where the plot jumps if the maximum value doesn't turn out to be helpful.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Gap Statistic Method}
+\NormalTok{factoextra}\SpecialCharTok{::}\FunctionTok{fviz\_nbclust}\NormalTok{(x, kmeans, }\AttributeTok{method =} \StringTok{"gap\_stat"}\NormalTok{, }\AttributeTok{nboot =} \DecValTok{50}\NormalTok{)}\SpecialCharTok{+}
+                         \FunctionTok{labs}\NormalTok{(}\AttributeTok{subtitle =} \StringTok{"Gap Statistic Method"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/gap-statistic-1.pdf}
+
+\(k=6\) clusters, as the peak suggests, would not be very revealing since having too many clusters can cease to be revealing and so we look to the points where the graph jumps. We can see this occurs at \(k=2\) and \(k=8\). The output indicates that there are at least two clusters present. Since we have previous evidence for the existence of three clusters and \(k=3\) yields a higher gap statistic than \(k=2\), \(k=3\) seems to be a good choice.
+
+One could argue for the existence of two or three clusters as they are both good candidates. At times like these it helps to visualise the clustering in an MDS or NMDS plot.
+
+Now let's divide the subjects into their respective clusters.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(cluster)}
+
+\CommentTok{\# assume 3 clusters}
+\NormalTok{K }\OtherTok{\textless{}{-}} \DecValTok{3}
+\NormalTok{x }\OtherTok{\textless{}{-}}\NormalTok{ ord[, }\DecValTok{1}\SpecialCharTok{:}\NormalTok{NDIM]}
+
+\NormalTok{clust }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(}\FunctionTok{pam}\NormalTok{(x, }\AttributeTok{k =}\NormalTok{ K, }\AttributeTok{cluster.only =}\NormalTok{ T))}
+\CommentTok{\# swapping the assignment of 2 and 3 to match ravel cst enumeration}
+\NormalTok{clust[clust }\SpecialCharTok{==} \DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}} \ConstantTok{NA}
+\NormalTok{clust[clust }\SpecialCharTok{==} \DecValTok{3}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{2}
+\NormalTok{clust[}\FunctionTok{is.na}\NormalTok{(clust)] }\OtherTok{\textless{}{-}} \DecValTok{3}
+
+\FunctionTok{colData}\NormalTok{(tse)}\SpecialCharTok{$}\NormalTok{CST }\OtherTok{\textless{}{-}}\NormalTok{ clust}
+\NormalTok{CSTs }\OtherTok{\textless{}{-}} \FunctionTok{as.character}\NormalTok{(}\FunctionTok{seq}\NormalTok{(K))}
+\end{Highlighting}
+\end{Shaded}
+
+Let's take a look at the MDS ordination with the Bray-Curtis dissimilarity in the first four dimensions.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(scater)}
+\FunctionTok{library}\NormalTok{(RColorBrewer)}
+\FunctionTok{library}\NormalTok{(cowplot)}
+
+\CommentTok{\# set up colours}
+\NormalTok{CSTColors }\OtherTok{\textless{}{-}} \FunctionTok{brewer.pal}\NormalTok{(}\DecValTok{6}\NormalTok{, }\StringTok{"Paired"}\NormalTok{)[}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{)] }\CommentTok{\# Length 6 for consistency with pre{-}revision CST+ colouration}
+\FunctionTok{names}\NormalTok{(CSTColors) }\OtherTok{\textless{}{-}}\NormalTok{ CSTs}
+
+\NormalTok{CSTColorScale }\OtherTok{\textless{}{-}} \FunctionTok{scale\_colour\_manual}\NormalTok{(}\AttributeTok{name =} \StringTok{"CST"}\NormalTok{, }\AttributeTok{values =}\NormalTok{ CSTColors)}
+\NormalTok{CSTFillScale }\OtherTok{\textless{}{-}} \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{name =} \StringTok{"CST"}\NormalTok{, }\AttributeTok{values =}\NormalTok{ CSTColors)}
+
+\CommentTok{\# plot MDS with Bray{-}Curtis dimensions 1 and 2}
+\NormalTok{p1 }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse, }\StringTok{"MDS\_BC"}\NormalTok{, }\AttributeTok{colour\_by =} \StringTok{"CST"}\NormalTok{, }\AttributeTok{point\_alpha =} \DecValTok{1}\NormalTok{, }
+                             \AttributeTok{percentVar =}\NormalTok{ var[}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{)]}\SpecialCharTok{*}\DecValTok{100}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Ordination by Cluster"}\NormalTok{) }\SpecialCharTok{+}
+                             \FunctionTok{theme}\NormalTok{(}\AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\CommentTok{\# plot MDS with Bray{-}Curtis dimensions 3 and 4}
+\NormalTok{p2 }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse, }\StringTok{"MDS\_BC"}\NormalTok{, }\AttributeTok{colour\_by =} \StringTok{"CST"}\NormalTok{, }\AttributeTok{point\_alpha =} \DecValTok{1}\NormalTok{, }
+                             \AttributeTok{ncomponents =} \FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{), }\AttributeTok{percentVar =}\NormalTok{ var[}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{)]}\SpecialCharTok{*}\DecValTok{100}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+
+\FunctionTok{plot\_grid}\NormalTok{(p1 }\SpecialCharTok{+}\NormalTok{ CSTColorScale, p2 }\SpecialCharTok{+}\NormalTok{ CSTColorScale, }\AttributeTok{nrow =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+And now nMDS.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tse  }\OtherTok{\textless{}{-}} \FunctionTok{runNMDS}\NormalTok{(tse, }\AttributeTok{FUN =}\NormalTok{ vegan}\SpecialCharTok{::}\NormalTok{vegdist, }\AttributeTok{method =} \StringTok{"bray"}\NormalTok{, }
+                \AttributeTok{name =} \StringTok{"NMDS\_BC"}\NormalTok{, }\AttributeTok{exprs\_values =} \StringTok{"counts"}\NormalTok{, }\AttributeTok{ncomponents =} \DecValTok{20}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## initial  value 4.717325 
+## iter   5 value 2.138115
+## iter  10 value 1.879881
+## iter  15 value 1.787953
+## iter  20 value 1.750342
+## iter  25 value 1.730981
+## iter  30 value 1.719617
+## iter  30 value 1.717980
+## iter  30 value 1.717898
+## final  value 1.717898 
+## converged
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse, }\StringTok{"NMDS\_BC"}\NormalTok{, }\AttributeTok{colour\_by =} \StringTok{"CST"}\NormalTok{, }\AttributeTok{point\_alpha =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th }\SpecialCharTok{+} 
+        \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"NMDS Bray{-}Curtis by Cluster"}\NormalTok{) }\SpecialCharTok{+}
+        \FunctionTok{theme}\NormalTok{(}\AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\SpecialCharTok{+}\NormalTok{ CSTColorScale}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+We can also look at a multitude of other distance metrics and subsets of the data.
+
+\hypertarget{holmes-and-mcmurdie-workflow}{%
+\section{Holmes and McMurdie Workflow}\label{holmes-and-mcmurdie-workflow}}
+
+For the following distance measures, we will only consider the sequencing technique ``Sanger'' from the enterotype data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{dim}\NormalTok{(tse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 553 280
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Subset data}
+\NormalTok{tse2 }\OtherTok{\textless{}{-}} \FunctionTok{subsetSamples}\NormalTok{(tse, }\FunctionTok{colData}\NormalTok{(tse)}\SpecialCharTok{$}\NormalTok{SeqTech }\SpecialCharTok{==} \StringTok{"Sanger"}\NormalTok{)}
+
+\CommentTok{\# Change NAs to 0}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{as.vector}\NormalTok{(}\FunctionTok{colData}\NormalTok{(tse2)}\SpecialCharTok{$}\NormalTok{Enterotype)}
+\NormalTok{x[}\FunctionTok{is.na}\NormalTok{(x)] }\OtherTok{\textless{}{-}} \DecValTok{0}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(x, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"1"}\NormalTok{, }\StringTok{"2"}\NormalTok{, }\StringTok{"3"}\NormalTok{, }\StringTok{"0"}\NormalTok{))}
+\FunctionTok{colData}\NormalTok{(tse2)}\SpecialCharTok{$}\NormalTok{Enterotype }\OtherTok{\textless{}{-}}\NormalTok{ x}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{dim}\NormalTok{(tse2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 553  41
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{table}\NormalTok{(}\FunctionTok{colData}\NormalTok{(tse2)}\SpecialCharTok{$}\NormalTok{Enterotype)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  1  2  3  0 
+##  8  6 18  9
+\end{verbatim}
+
+\hypertarget{jensen-shannon-distance}{%
+\subsection{Jensen-Shannon Distance}\label{jensen-shannon-distance}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(philentropy)}
+
+\NormalTok{custom\_FUN }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{ (x) }\FunctionTok{as.dist}\NormalTok{(philentropy}\SpecialCharTok{::}\FunctionTok{JSD}\NormalTok{(x))}
+\NormalTok{tse2 }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{runMDS}\NormalTok{(tse2, }\AttributeTok{FUN =}\NormalTok{ custom\_FUN, }\AttributeTok{name =} \StringTok{"MDS\_JSD"}\NormalTok{, }\AttributeTok{exprs\_values =} \StringTok{"counts"}\NormalTok{)}
+\NormalTok{scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse2, }\StringTok{"MDS\_JSD"}\NormalTok{, }\AttributeTok{colour\_by =} \StringTok{"Enterotype"}\NormalTok{, }
+                       \AttributeTok{shape\_by =} \StringTok{"Enterotype"}\NormalTok{, }\AttributeTok{point\_size =} \DecValTok{4}\NormalTok{, }\AttributeTok{point\_alpha =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+                       \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Multidimensional Scaling using Jensen{-}Shannon Divergence"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+\hypertarget{nonmetric-multidimensional-scaling}{%
+\subsection{NonMetric Multidimensional Scaling}\label{nonmetric-multidimensional-scaling}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tse2 }\OtherTok{\textless{}{-}}\NormalTok{ mia}\SpecialCharTok{::}\FunctionTok{runNMDS}\NormalTok{(tse2, }\AttributeTok{FUN =}\NormalTok{ custom\_FUN, }\AttributeTok{nmdsFUN =} \StringTok{"monoMDS"}\NormalTok{, }\AttributeTok{name =} \StringTok{"NMDS\_JSD"}\NormalTok{)}
+\NormalTok{scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse2, }\StringTok{"NMDS\_JSD"}\NormalTok{, }\AttributeTok{colour\_by =} \StringTok{"Enterotype"}\NormalTok{, }
+                       \AttributeTok{shape\_by =} \StringTok{"Enterotype"}\NormalTok{, }\AttributeTok{point\_size =} \DecValTok{4}\NormalTok{, }\AttributeTok{point\_alpha =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+} 
+                       \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Non{-}Metric Multidimensional Scaling using Jensen{-}Shannon Divergence"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\hypertarget{chi-squared-correspondence-results}{%
+\subsection{Chi-Squared Correspondence Results}\label{chi-squared-correspondence-results}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tse2 }\OtherTok{\textless{}{-}}\NormalTok{ mia}\SpecialCharTok{::}\FunctionTok{runCCA}\NormalTok{(tse2, }\AttributeTok{name =} \StringTok{"PCA\_CS"}\NormalTok{, }\AttributeTok{exprs\_values =} \StringTok{"counts"}\NormalTok{)}
+\NormalTok{scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse2, }\StringTok{"PCA\_CS"}\NormalTok{, }\AttributeTok{colour\_by =} \StringTok{"Enterotype"}\NormalTok{, }
+                       \AttributeTok{shape\_by =} \StringTok{"Enterotype"}\NormalTok{, }\AttributeTok{point\_size =} \DecValTok{3}\NormalTok{, }\AttributeTok{point\_alpha =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+                       \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Correspondance Analysis using Chi{-}Squared Distance"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+\hypertarget{bray-curtis-mds}{%
+\subsection{Bray-Curtis MDS}\label{bray-curtis-mds}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tse2 }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{runMDS}\NormalTok{(tse2, }\AttributeTok{FUN =}\NormalTok{ vegan}\SpecialCharTok{::}\NormalTok{vegdist, }\AttributeTok{name =} \StringTok{"MDS\_BC"}\NormalTok{, }\AttributeTok{exprs\_values =} \StringTok{"counts"}\NormalTok{)}
+\NormalTok{scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse2, }\StringTok{"MDS\_BC"}\NormalTok{, }\AttributeTok{colour\_by =} \StringTok{"Enterotype"}\NormalTok{, }
+                       \AttributeTok{shape\_by =} \StringTok{"Enterotype"}\NormalTok{, }\AttributeTok{point\_size =} \DecValTok{4}\NormalTok{, }\AttributeTok{point\_alpha =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+                       \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"MDS using Bray{-}Curtis Dissimilarity"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\hypertarget{bray-curtis-nmds}{%
+\subsection{Bray-Curtis NMDS}\label{bray-curtis-nmds}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tse2 }\OtherTok{\textless{}{-}}\NormalTok{ mia}\SpecialCharTok{::}\FunctionTok{runNMDS}\NormalTok{(tse2, }\AttributeTok{FUN =}\NormalTok{ vegan}\SpecialCharTok{::}\NormalTok{vegdist, }\AttributeTok{nmdsFUN =} \StringTok{"monoMDS"}\NormalTok{, }\AttributeTok{method =} \StringTok{"bray"}\NormalTok{, }\AttributeTok{name =} \StringTok{"NMDS\_BC"}\NormalTok{)}
+\NormalTok{scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse2, }\StringTok{"NMDS\_BC"}\NormalTok{, }\AttributeTok{colour\_by =} \StringTok{"Enterotype"}\NormalTok{, }
+                       \AttributeTok{shape\_by =} \StringTok{"Enterotype"}\NormalTok{, }\AttributeTok{point\_size =} \DecValTok{4}\NormalTok{, }\AttributeTok{point\_alpha =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+} 
+                       \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"nMDS using Bray{-}Curtis"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+\hypertarget{other-distances-from-the-philentropy-package}{%
+\subsection{Other distances from the Philentropy package}\label{other-distances-from-the-philentropy-package}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(gridExtra)}
+\CommentTok{\# take distances that more or less match Holmes and McMurdie}
+\NormalTok{distances }\OtherTok{\textless{}{-}} \FunctionTok{getDistMethods}\NormalTok{()[}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{23}\NormalTok{, }\DecValTok{42}\NormalTok{)]}
+\CommentTok{\# variable to store results}
+\NormalTok{plist }\OtherTok{\textless{}{-}} \FunctionTok{vector}\NormalTok{(}\StringTok{"list"}\NormalTok{, }\FunctionTok{length}\NormalTok{(distances))}
+\FunctionTok{names}\NormalTok{(plist) }\OtherTok{\textless{}{-}}\NormalTok{ distances}
+
+\CommentTok{\# calculate each distance measure}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ distances[}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(distances)]) \{}
+\NormalTok{  custom\_FUN }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{ (x) }\FunctionTok{as.dist}\NormalTok{(philentropy}\SpecialCharTok{::}\FunctionTok{distance}\NormalTok{(x, }\AttributeTok{method =}\NormalTok{ i, }\AttributeTok{p =} \DecValTok{1}\NormalTok{))}
+\NormalTok{  tse2 }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{runMDS}\NormalTok{(tse2, }\AttributeTok{FUN =}\NormalTok{ custom\_FUN, }\AttributeTok{name =}\NormalTok{ i, }\AttributeTok{exprs\_values =} \StringTok{"counts"}\NormalTok{)}
+  \CommentTok{\# store result in plist}
+\NormalTok{  plist[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse2, i, }\AttributeTok{colour\_by =} \StringTok{"Enterotype"}\NormalTok{)}
+\NormalTok{\}}
+
+\FunctionTok{library}\NormalTok{(plyr)}
+
+\CommentTok{\# plot}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{ldply}\NormalTok{(plist, }\ControlFlowTok{function}\NormalTok{(x) x}\SpecialCharTok{$}\NormalTok{data)}
+\FunctionTok{names}\NormalTok{(df) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"distance"}\NormalTok{, }\StringTok{"Axis.1"}\NormalTok{, }\StringTok{"Axis.2"}\NormalTok{, }\StringTok{"Enterotype"}\NormalTok{)}
+\NormalTok{p }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(Axis}\FloatTok{.1}\NormalTok{, Axis}\FloatTok{.2}\NormalTok{, }\AttributeTok{color =}\NormalTok{ Enterotype, }\AttributeTok{shape =}\NormalTok{ Enterotype)) }\SpecialCharTok{+} 
+     \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \FloatTok{2.5}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+} 
+     \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{distance, }\AttributeTok{scales =} \StringTok{"free"}\NormalTok{) }\SpecialCharTok{+} 
+     \FunctionTok{theme}\NormalTok{(}\AttributeTok{strip.text =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{8}\NormalTok{)) }\SpecialCharTok{+}
+     \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"MDS on various distance metrics for Enterotype dataset"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\NormalTok{p}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\hypertarget{add-a-clustering-variable}{%
+\subsection{Add a Clustering Variable}\label{add-a-clustering-variable}}
+
+It may be revealing to see the full data (with subsetting) clustered according to a colData variable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# remove taxon}
+\NormalTok{tse3 }\OtherTok{\textless{}{-}} \FunctionTok{subsetTaxa}\NormalTok{(tse, }\FunctionTok{rownames}\NormalTok{(tse) }\SpecialCharTok{!=} \StringTok{"{-}1"}\NormalTok{)}
+
+\CommentTok{\# Remove NAs}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{as.vector}\NormalTok{(}\FunctionTok{colData}\NormalTok{(tse3)}\SpecialCharTok{$}\NormalTok{Enterotype)}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(x)}
+\FunctionTok{colData}\NormalTok{(tse)}\SpecialCharTok{$}\NormalTok{Enterotype }\OtherTok{\textless{}{-}}\NormalTok{ x}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# loop over distances}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ distances[}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(distances)]) \{}
+\NormalTok{  custom\_FUN }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{ (x) }\FunctionTok{as.dist}\NormalTok{(philentropy}\SpecialCharTok{::}\FunctionTok{distance}\NormalTok{(x, }\AttributeTok{method =}\NormalTok{ i, }\AttributeTok{p =} \DecValTok{1}\NormalTok{))}
+\NormalTok{  tse3 }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{runMDS}\NormalTok{(tse3, }\AttributeTok{FUN =}\NormalTok{ custom\_FUN, }\AttributeTok{name =}\NormalTok{ i, }\AttributeTok{exprs\_values =} \StringTok{"counts"}\NormalTok{)}
+  
+\NormalTok{  plist[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse3, i, }\AttributeTok{colour\_by =} \StringTok{"SeqTech"}\NormalTok{, }\AttributeTok{shape\_by =} \StringTok{"Enterotype"}\NormalTok{)}
+\NormalTok{\}}
+\CommentTok{\# plot}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{ldply}\NormalTok{(plist, }\ControlFlowTok{function}\NormalTok{(x) x}\SpecialCharTok{$}\NormalTok{data)}
+\FunctionTok{names}\NormalTok{(df) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"distance"}\NormalTok{, }\StringTok{"Axis.1"}\NormalTok{, }\StringTok{"Axis.2"}\NormalTok{, }\StringTok{"SeqTech"}\NormalTok{, }\StringTok{"Enterotype"}\NormalTok{)}
+\NormalTok{p }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(Axis}\FloatTok{.1}\NormalTok{, Axis}\FloatTok{.2}\NormalTok{, }\AttributeTok{color =}\NormalTok{ SeqTech, }\AttributeTok{shape =}\NormalTok{ Enterotype)) }\SpecialCharTok{+} 
+     \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \DecValTok{2}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+}
+     \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{distance, }\AttributeTok{scales =} \StringTok{"free"}\NormalTok{) }\SpecialCharTok{+} 
+     \FunctionTok{theme}\NormalTok{(}\AttributeTok{strip.text =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{8}\NormalTok{)) }\SpecialCharTok{+}
+     \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"MDS on various distance metrics for Enterotype dataset"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\NormalTok{p}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-16-1.pdf}
+
+\hypertarget{more-clustering}{%
+\subsection{More Clustering}\label{more-clustering}}
+
+Dropping 9 outliers (the 0 enterotype), let's visualise the clustering in a different manner. Based on our analysis above, we concluded there were 3 distinct clusters. The authors of the Nature paper published on the enterotype data created a figure similar to the following:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ade4)}
+\CommentTok{\# remove 9 outliers}
+\NormalTok{tse2 }\OtherTok{\textless{}{-}} \FunctionTok{subsetSamples}\NormalTok{(tse2, }\FunctionTok{colData}\NormalTok{(tse2)}\SpecialCharTok{$}\NormalTok{Enterotype }\SpecialCharTok{!=} \DecValTok{0}\NormalTok{)}
+\FunctionTok{colData}\NormalTok{(tse2)}\SpecialCharTok{$}\NormalTok{Enterotype }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(}\FunctionTok{colData}\NormalTok{(tse2)}\SpecialCharTok{$}\NormalTok{Enterotype)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{clus }\OtherTok{\textless{}{-}} \FunctionTok{colData}\NormalTok{(tse2)}\SpecialCharTok{$}\NormalTok{Enterotype}
+\NormalTok{dist }\OtherTok{\textless{}{-}} \FunctionTok{calculateJSD}\NormalTok{(tse2)}
+\NormalTok{pcoa }\OtherTok{\textless{}{-}} \FunctionTok{dudi.pco}\NormalTok{(dist, }\AttributeTok{scannf =}\NormalTok{ F, }\AttributeTok{nf =} \DecValTok{3}\NormalTok{)}
+\FunctionTok{s.class}\NormalTok{(pcoa}\SpecialCharTok{$}\NormalTok{li, }\AttributeTok{grid =}\NormalTok{ F, }\AttributeTok{fac =}\NormalTok{ clus)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-18-1.pdf}
+
+Revisit the distances without the 9 outlier values.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# loop over distances}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ distances[}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(distances)]) \{}
+\NormalTok{  custom\_FUN }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{ (x) }\FunctionTok{as.dist}\NormalTok{(philentropy}\SpecialCharTok{::}\FunctionTok{distance}\NormalTok{(x, }\AttributeTok{method =}\NormalTok{ i, }\AttributeTok{p =} \DecValTok{1}\NormalTok{))}
+\NormalTok{  tse2 }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{runMDS}\NormalTok{(tse2, }\AttributeTok{FUN =}\NormalTok{ custom\_FUN, }\AttributeTok{name =}\NormalTok{ i, }\AttributeTok{exprs\_values =} \StringTok{"counts"}\NormalTok{)}
+  
+\NormalTok{  plist[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ scater}\SpecialCharTok{::}\FunctionTok{plotReducedDim}\NormalTok{(tse2, i, }\AttributeTok{colour\_by =} \StringTok{"Enterotype"}\NormalTok{)}
+\NormalTok{\}}
+\CommentTok{\# plot}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{ldply}\NormalTok{(plist, }\ControlFlowTok{function}\NormalTok{(x) x}\SpecialCharTok{$}\NormalTok{data)}
+\FunctionTok{names}\NormalTok{(df) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"distance"}\NormalTok{, }\StringTok{"Axis.1"}\NormalTok{, }\StringTok{"Axis.2"}\NormalTok{, }\StringTok{"Enterotype"}\NormalTok{)}
+\NormalTok{p }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(Axis}\FloatTok{.1}\NormalTok{, Axis}\FloatTok{.2}\NormalTok{, }\AttributeTok{color =}\NormalTok{ Enterotype, }\AttributeTok{shape =}\NormalTok{ Enterotype)) }\SpecialCharTok{+} 
+     \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \FloatTok{2.5}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+} 
+     \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{distance, }\AttributeTok{scales =} \StringTok{"free"}\NormalTok{) }\SpecialCharTok{+} 
+     \FunctionTok{theme}\NormalTok{(}\AttributeTok{strip.text =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{8}\NormalTok{)) }\SpecialCharTok{+}
+     \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"MDS on various distance metrics for Enterotype dataset with 9 samples removed"}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ th}
+\NormalTok{p}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-19-1.pdf}
+
+Would we use the same number of clusters as before with 9 values missing?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Slightly faster way to use pam}
+\NormalTok{pam1 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x,k) }\FunctionTok{list}\NormalTok{(}\AttributeTok{cluster =} \FunctionTok{pam}\NormalTok{(x,k, }\AttributeTok{cluster.only=}\ConstantTok{TRUE}\NormalTok{))}
+
+\NormalTok{pamPCoA }\OtherTok{=} \ControlFlowTok{function}\NormalTok{(x, k) \{}
+    \FunctionTok{list}\NormalTok{(}\AttributeTok{cluster =} \FunctionTok{pam}\NormalTok{(x[,}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{], k, }\AttributeTok{cluster.only =} \ConstantTok{TRUE}\NormalTok{))}
+\NormalTok{\}}
+\CommentTok{\# gap statistic method}
+\NormalTok{gs }\OtherTok{\textless{}{-}} \FunctionTok{clusGap}\NormalTok{(}\FunctionTok{assays}\NormalTok{(tse2)}\SpecialCharTok{$}\NormalTok{counts, }\AttributeTok{FUN =}\NormalTok{ pamPCoA, }\AttributeTok{K.max =} \DecValTok{10}\NormalTok{)}
+\FunctionTok{fviz\_gap\_stat}\NormalTok{(gs)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+We still see a jump at three so it is still a good choice for the number of clusters.
+
+\hypertarget{cst-analysis}{%
+\section{CST Analysis}\label{cst-analysis}}
+
+Looking at heat maps of the CSTs can reveal structure on a different level. Using all of the data again (for the top 20 taxa) and taking the z transformation of the clr transformed counts, we have
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Find top 20 taxa}
+\NormalTok{rel\_taxa }\OtherTok{\textless{}{-}} \FunctionTok{getTopTaxa}\NormalTok{(tse, }\AttributeTok{top =} \DecValTok{20}\NormalTok{)}
+\CommentTok{\# Z transform of CLR counts}
+\NormalTok{mat }\OtherTok{\textless{}{-}} \FunctionTok{transformCounts}\NormalTok{(tse, }\AttributeTok{abund\_values =} \StringTok{"counts"}\NormalTok{, }\AttributeTok{method =} \StringTok{"clr"}\NormalTok{, }\AttributeTok{pseudocount =} \DecValTok{1}\NormalTok{)}
+\NormalTok{mat }\OtherTok{\textless{}{-}} \FunctionTok{transformFeatures}\NormalTok{(mat, }\AttributeTok{abund\_values =} \StringTok{"clr"}\NormalTok{, }\AttributeTok{method =} \StringTok{"z"}\NormalTok{)}
+\CommentTok{\# Select top 20 taxa}
+\NormalTok{mat }\OtherTok{\textless{}{-}} \FunctionTok{subsetTaxa}\NormalTok{(mat, }\FunctionTok{is.element}\NormalTok{(}\FunctionTok{rownames}\NormalTok{(tse), rel\_taxa))}
+\NormalTok{mat }\OtherTok{\textless{}{-}} \FunctionTok{assays}\NormalTok{(mat)}\SpecialCharTok{$}\NormalTok{z}
+
+\CommentTok{\# Order CSTs}
+\NormalTok{mat }\OtherTok{\textless{}{-}}\NormalTok{ mat[, }\FunctionTok{order}\NormalTok{(clust)]}
+\FunctionTok{colnames}\NormalTok{(mat) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(}\FunctionTok{sort}\NormalTok{(clust))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Plot}
+\NormalTok{CSTs        }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{sort}\NormalTok{(clust))}
+\FunctionTok{names}\NormalTok{(CSTs) }\OtherTok{\textless{}{-}} \StringTok{"CST"}
+\NormalTok{breaks }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\AttributeTok{length.out =} \DecValTok{10}\NormalTok{)}
+\CommentTok{\# Make grid for heatmap}
+\FunctionTok{setHook}\NormalTok{(}\StringTok{"grid.newpage"}\NormalTok{, }\ControlFlowTok{function}\NormalTok{() }\FunctionTok{pushViewport}\NormalTok{(}\FunctionTok{viewport}\NormalTok{(}\AttributeTok{x =} \DecValTok{1}\NormalTok{, }\AttributeTok{y =} \DecValTok{1}\NormalTok{, }\AttributeTok{width =} \FloatTok{0.9}\NormalTok{, }
+                                                         \AttributeTok{height =} \FloatTok{0.9}\NormalTok{, }\AttributeTok{name =} \StringTok{"vp"}\NormalTok{, }
+                                                         \AttributeTok{just =} \FunctionTok{c}\NormalTok{(}\StringTok{"right"}\NormalTok{,}\StringTok{"top"}\NormalTok{))), }
+        \AttributeTok{action =} \StringTok{"prepend"}\NormalTok{)}
+\FunctionTok{pheatmap}\NormalTok{(mat, }\AttributeTok{color =} \FunctionTok{rev}\NormalTok{(}\FunctionTok{brewer.pal}\NormalTok{(}\DecValTok{9}\NormalTok{, }\StringTok{"RdBu"}\NormalTok{)), }\AttributeTok{breaks =}\NormalTok{ breaks, }\AttributeTok{main =} \StringTok{"All CSTs"}\NormalTok{, }\AttributeTok{treeheight\_row =} \DecValTok{0}\NormalTok{, }\AttributeTok{treeheight\_col =} \DecValTok{0}\NormalTok{, }\AttributeTok{show\_colnames =} \DecValTok{0}\NormalTok{, }\AttributeTok{annotation\_col =}\NormalTok{ CSTs, }\AttributeTok{cluster\_cols =}\NormalTok{ F)}
+\FunctionTok{setHook}\NormalTok{(}\StringTok{"grid.newpage"}\NormalTok{, }\ConstantTok{NULL}\NormalTok{, }\StringTok{"replace"}\NormalTok{)}
+\FunctionTok{grid.text}\NormalTok{(}\StringTok{"Sample"}\NormalTok{, }\AttributeTok{x =} \FloatTok{0.39}\NormalTok{, }\AttributeTok{y =} \SpecialCharTok{{-}}\FloatTok{0.04}\NormalTok{, }\AttributeTok{gp =} \FunctionTok{gpar}\NormalTok{(}\AttributeTok{fontsize =} \DecValTok{16}\NormalTok{))}
+\FunctionTok{grid.text}\NormalTok{(}\StringTok{"Genus"}\NormalTok{, }\AttributeTok{x =} \SpecialCharTok{{-}}\FloatTok{0.04}\NormalTok{, }\AttributeTok{y =} \FloatTok{0.47}\NormalTok{, }\AttributeTok{rot =} \DecValTok{90}\NormalTok{, }\AttributeTok{gp =} \FunctionTok{gpar}\NormalTok{(}\AttributeTok{fontsize =} \DecValTok{16}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{10-community-typing_files/figure-latex/unnamed-chunk-22-1.pdf}
+
+\hypertarget{session-info}{%
+\section{Session Info}\label{session-info}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sessionInfo}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## R version 4.1.1 (2021-08-10)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 20.04.3 LTS
+## 
+## Matrix products: default
+## BLAS/LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.8.so
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=C             
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] grid      stats4    stats     graphics  grDevices utils     datasets 
+## [8] methods   base     
+## 
+## other attached packages:
+##  [1] ade4_1.7-18                    plyr_1.8.6                    
+##  [3] gridExtra_2.3                  philentropy_0.5.0             
+##  [5] cowplot_1.1.1                  scater_1.21.6                 
+##  [7] scuttle_1.3.1                  cluster_2.1.2                 
+##  [9] factoextra_1.0.7               RColorBrewer_1.1-2            
+## [11] pheatmap_1.0.12                miaViz_1.1.4                  
+## [13] ggraph_2.0.5                   ggplot2_3.3.5                 
+## [15] mia_1.1.14                     TreeSummarizedExperiment_2.1.4
+## [17] Biostrings_2.61.2              XVector_0.33.0                
+## [19] SingleCellExperiment_1.15.2    SummarizedExperiment_1.23.4   
+## [21] Biobase_2.53.0                 GenomicRanges_1.45.0          
+## [23] GenomeInfoDb_1.29.8            IRanges_2.27.2                
+## [25] S4Vectors_0.31.4               BiocGenerics_0.39.2           
+## [27] MatrixGenerics_1.5.4           matrixStats_0.61.0            
+## 
+## loaded via a namespace (and not attached):
+##   [1] readxl_1.3.1                backports_1.2.1            
+##   [3] igraph_1.2.6                lazyeval_0.2.2             
+##   [5] splines_4.1.1               BiocParallel_1.27.10       
+##   [7] digest_0.6.28               yulab.utils_0.0.2          
+##   [9] htmltools_0.5.2             viridis_0.6.1              
+##  [11] fansi_0.5.0                 magrittr_2.0.1             
+##  [13] memoise_2.0.0               ScaledMatrix_1.1.0         
+##  [15] DECIPHER_2.21.0             openxlsx_4.2.4             
+##  [17] graphlayouts_0.7.1          colorspace_2.0-2           
+##  [19] blob_1.2.2                  ggrepel_0.9.1              
+##  [21] haven_2.4.3                 xfun_0.26                  
+##  [23] dplyr_1.0.7                 crayon_1.4.1               
+##  [25] RCurl_1.98-1.5              jsonlite_1.7.2             
+##  [27] ape_5.5                     glue_1.4.2                 
+##  [29] polyclip_1.10-0             gtable_0.3.0               
+##  [31] zlibbioc_1.39.0             DelayedArray_0.19.4        
+##  [33] car_3.0-11                  BiocSingular_1.9.1         
+##  [35] abind_1.4-5                 scales_1.1.1               
+##  [37] DBI_1.1.1                   rstatix_0.7.0              
+##  [39] Rcpp_1.0.7                  viridisLite_0.4.0          
+##  [41] decontam_1.13.0             gridGraphics_0.5-1         
+##  [43] tidytree_0.3.5              foreign_0.8-81             
+##  [45] bit_4.0.4                   rsvd_1.0.5                 
+##  [47] ellipsis_0.3.2              pkgconfig_2.0.3            
+##  [49] farver_2.1.0                utf8_1.2.2                 
+##  [51] ggplotify_0.1.0             tidyselect_1.1.1           
+##  [53] labeling_0.4.2              rlang_0.4.11               
+##  [55] reshape2_1.4.4              cellranger_1.1.0           
+##  [57] munsell_0.5.0               tools_4.1.1                
+##  [59] cachem_1.0.6                DirichletMultinomial_1.35.0
+##  [61] generics_0.1.0              RSQLite_2.2.8              
+##  [63] broom_0.7.9                 evaluate_0.14              
+##  [65] stringr_1.4.0               fastmap_1.1.0              
+##  [67] yaml_2.2.1                  ggtree_3.1.4               
+##  [69] knitr_1.34                  bit64_4.0.5                
+##  [71] tidygraph_1.2.0             zip_2.2.0                  
+##  [73] purrr_0.3.4                 nlme_3.1-153               
+##  [75] sparseMatrixStats_1.5.3     aplot_0.1.1                
+##  [77] compiler_4.1.1              beeswarm_0.4.0             
+##  [79] curl_4.3.2                  ggsignif_0.6.3             
+##  [81] treeio_1.17.2               tibble_3.1.4               
+##  [83] tweenr_1.0.2                stringi_1.7.4              
+##  [85] highr_0.9                   forcats_0.5.1              
+##  [87] lattice_0.20-45             Matrix_1.3-4               
+##  [89] vegan_2.5-7                 permute_0.9-5              
+##  [91] vctrs_0.3.8                 pillar_1.6.3               
+##  [93] lifecycle_1.0.1             BiocNeighbors_1.11.0       
+##  [95] data.table_1.14.0           bitops_1.0-7               
+##  [97] irlba_2.3.3                 patchwork_1.1.1            
+##  [99] R6_2.5.1                    bookdown_0.24              
+## [101] rio_0.5.27                  vipor_0.4.5                
+## [103] MASS_7.3-54                 assertthat_0.2.1           
+## [105] withr_2.4.2                 GenomeInfoDbData_1.2.7     
+## [107] hms_1.1.1                   mgcv_1.8-37                
+## [109] parallel_4.1.1              ggfun_0.0.4                
+## [111] beachmat_2.9.1              tidyr_1.1.3                
+## [113] rmarkdown_2.11              DelayedMatrixStats_1.15.4  
+## [115] carData_3.0-4               ggpubr_0.4.0               
+## [117] ggnewscale_0.4.5            ggforce_0.3.3              
+## [119] ggbeeswarm_0.6.0
+\end{verbatim}
+
+\hypertarget{bibliography}{%
+\section{Bibliography}\label{bibliography}}
+
+Robert L. Thorndike. 1953. ``Who Belongs in the Family?''. Psychometrika. 18 (4): 267--276. \url{doi:10.1007/BF02289263}
+
+Peter J. Rousseeuw. 1987. ``Silhouettes: a Graphical Aid to the Interpretation and Validation of Cluster Analysis''. Computational and Applied Mathematics. 20: 53--65. \url{doi:10.1016/0377-0427(87)90125-7}.
+
+Robert Tibshirani, Guenther Walther, and Trevor Hastie. 2002. Estimating the number of clusters in a data set via the gap statistic method. (63): 411-423. \url{doi:10.1111/1467-9868.00293}.
+
+Susan Holmes and Joey McMurdie. 2015. Reproducible Research: Enterotype Example. \url{http://statweb.stanford.edu/~susan/papers/EnterotypeRR.html}.
+
+Daniel B. DiGiulio et al.~2015. Temporal and spatial variation of the human microbiota during pregnancy. (112): 11060--11065. \url{doi:10.1073/pnas.1502875112}
+
+Arumugam, M., et al.~(2011). Enterotypes of the human gut microbiome.
 
 \begin{verbatim}
 ## Loading required package: SummarizedExperiment
