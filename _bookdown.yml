@@ -17,5 +17,6 @@ rmd_files:
   - 07-beta.Rmd
   - 08-abundance.Rmd
   - 09-material.Rmd
+  - 10-community-typing.Rmd
   - 10-misc.Rmd
   - 12-Solutions.Rmd
