@@ -1,0 +1,77 @@
+---
+title: "Untitled"
+author: "Rajesh"
+date: "01/10/2021"
+output: html_document
+---
+
+
+#The example in this tutorial are mainly based on this online book by Leo Lahti [aut], Sudarshan Shetty [aut], Felix GM Ernst [aut, cre]  https://microbiome.github.io/OMA/
+
+#1 load the human gastrointestinal microbiota data provided 
+#the detail of this project can found here https://data.inrae.fr/dataset.xhtml?persistentId=doi:10.15454/FLANUP ( use)
+
+
+#2 Make a se (SummarizedExperiment) Objecct for the further analysis 
+
+# Detail how to import data as a SummarizedExperiment object is explained well in this Online book https://microbiome.github.io/OMA/containers.html#loading-experimental-microbiome-data
+
+
+
+#3 Once you make a SummarizedExperiment object out of this data then check how many taxa and samples the data contains? 
+
+
+
+#4 Report how many unique phylum present in this data
+
+
+#5. Subset the data at the phylum level with only taking bacterial phyla that are greater than 10% of prevalence in the total sample (feature selection lab 1)
+
+
+#6 Subset a se object which consist only two phyum i.e Actinobacteria", "Cyanobacteria
+
+
+ 
+#7 Calculates relative abundances, and stores the table to assays
+
+
+#8 Perform a centred log-ratio transformation (clr)
+
+# Reference Aitchison, J. (1986). “The Statistical Analysis of Compositional Data”, Chapman and Hall, reprinted in 2003 with additional material by The Blackburn Press 
+
+
+#9 calculate Abundances of all taxa in specific sample and abundance of specific taxa in all samples
+
+
+
+
+#Lab 2 
+  
+                   #Clustering and visualization
+                   
+# 1. Visualize Beta-diversity using principal coordinate analysis (PCoA); use relative abundance data with bray-Curtis dissimilarities
+
+
+#2.  Visualize Beta-diversity using principal coordinate analysis (PCoA); with Aitchison distance (clr transformation+ Euclidean distance)
+
+
+#3. Cluster the samples using Dirichlet- multinomial mixture model 
+
+
+#4. Visualize the cluster in the PCoA plot
+
+
+
+
+                ##Lab 3 Analysis and interpretation 
+
+#1. What taxa are driving the axis? Calculate the spearman correlation between PC1 and the relative abundance of the bacteria and visualize the results in a bar plot.
+
+
+#2. Visualize the dominant taxonomic group of each sample by colour on PCoA plot 
+
+#3. Visualize gender by colour on PCoA plot 
+
+
+
+
