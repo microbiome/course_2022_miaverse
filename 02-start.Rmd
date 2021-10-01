@@ -8,7 +8,7 @@ Install the following software in advance in order to avoid
 unnecessary delays and leaving more time for the course contents.
 
 
-* [R (version >4.1.0)](https://www.r-project.org/) 
+* [R (version >=4.1.0)](https://www.r-project.org/) 
 
 * [RStudio](https://www.rstudio.com/products/rstudio/download/);
   choose "Rstudio Desktop" to download the latest version. Optional
@@ -40,7 +40,7 @@ the R session. Only uninstalled packages are installed.
 ```{r warning = FALSE, message = FALSE}
 # List of packages that we need from cran and bioc 
 cran_pkg <- c("BiocManager", "bookdown", "dplyr", "ecodist", "ggplot2", 
-              "gridExtra", "kableExtra", "knitr", "scales", "vegan")
+              "gridExtra", "kableExtra", "knitr", "philentropy", "scales", "vegan")
 bioc_pkg <- c("ANCOMBC", "ape", "DESeq2",  "DirichletMultinomial", "mia", "miaViz")
 
 # Gets those packages that are already installed
@@ -55,7 +55,7 @@ bioc_pkg_to_be_installed <- setdiff(bioc_pkg, bioc_pkg_already_installed)
 ```{r warning = FALSE, message = FALSE}
 # If there are packages that need to be installed, installs them from CRAN
 if( length(cran_pkg_to_be_installed) ) {
-   install.packages(cran_pkg_to_be_installed)
+   install.packages(cran_pkg_to_be_installed, repos="https://cloud.r-project.org")
 }
 ```
 
