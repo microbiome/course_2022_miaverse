@@ -5,62 +5,27 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-#Tutorial Aims 
+
+# Tutorial Aims 
 In this tutorial we will learn feature selection, dimension reduction, clustering, visualization, analysis and interpretation  using  
  miaverse (mia = MIcrobiome Analysis) and miaViz - (Microbiome Analysis Plotting and Visualization) to explore patterns in human gut microbiome datasets. 
 
 The example in this tutorial are mainly based on this online book        
 [Orchestrating Microbiome Analysis](https://microbiome.github.io/OMA/)
 
-In this tutorial we use [human gastrointestinal microbiota data](https://www.microbiomeatlas.org/)
+In this tutorial we use data from [The Human Gut Microbiome Atlas (HGMA)](https://www.microbiomeatlas.org/)
 
 
 
-   # Lab 1 
+# Lab 1 
    
    
-   ## unsupervised learning: Feature selection & dimension reduction
+## unsupervised learning: Feature selection & dimension reduction
    
-1. Make the tse (SummarizedExperiment) Object for the further analysis 
+1. Make the tse (TreeSummarizedExperiment) Object for the further analysis  (use the provided script to make a tse)
+
 
 ## Load the data 
-
-
-
-
-```{r}
-
- samples_df <- read.csv(file ="HGMA.web.metadata.csv", 
-               header = TRUE)
-
-otu_mat <- read.csv(file ="HGMA.web.MSP.abundance.matrix.csv", 
-               header = TRUE)
-
-tax_mat <- read.table(file='IGC2.1989MSPs.taxo.tsv',sep = '\t', header = TRUE)
-
-tree <- read.tree("IGC2.1990MSPs.nwk",text = NULL, tree.names = NULL, skip = 0,comment.char = "", keep.multi = FALSE)
-
-```
-
-
-```{r}
-tax_mat <- tax_mat[,c("phylum", "class", "order", "family", "genus","species" )]
-se <- TreeSummarizedExperiment(assays = list(counts = otu_mat[,rownames(samples_df)]),
-                           colData = samples_df,
-                           rowData = tax_mat[rownames(otu_mat),])
-se
-```
-
-```{r}
-tse <- as(se, "TreeSummarizedExperiment")
-rowTree(tse) <- tree
-```
-
-
-```{r}
-common.nodes <- intersect(rownames(tse), rowTree(tse)$tip.label)
-tse <- TreeSummarizedExperiment::subsetByLeaf(x = tse, rowLeaf = common.nodes, updateTree = TRUE)
-```
 
 
 
@@ -78,16 +43,16 @@ tse_phylum <- agglomerateByRank(tse, rank = "Phylum")
 ```{r}
 altExp(tse,"species") <- agglomerateByRank(se, "species")
 getPrevalentTaxa(tse, detection = 0, prevalence = 10/100)
-prev <- getPrevalentTaxa(tse, detection = 0, prevalence = 10/100,
-                         rank = "species", sort = TRUE)
+prev <- getPrevalentTaxa(tse, detection = 0, prevalence = 10/100)
+                         
 ```
 
 
-4. Subset a se object which consist only two phyla i.e Actinobacteria", "Cyanobacteria
+4. Subset a tse object which consist only two phyla i.e Actinobacteria", "Cyanobacteria
 
 
 ```{r}
-se_subset_by_feature <- se[rowData(tse)$phylum %in% c("Actinobacteria", "Cyanobacteria") & !is.na(rowData(tse)$phylum), ]
+se_subset_by_feature <- se[rowData(tse)$phylum %in% c("Actinobacteria", "Cyanobacteria")]
 se_subset_by_feature
 ```
 
@@ -101,7 +66,7 @@ tse <- relAbundanceCounts(tse)
 ```
 
 
-6.Perform a centred log-ratio transformation (clr) (i.e. mia::transformSamples)
+6.Perform a centered log-ratio transformation (clr) (i.e. mia::transformSamples)
 
 ```{r}
 tse <- transformSamples(x = tse, abund_values = "counts", method = "clr", 
@@ -109,10 +74,10 @@ tse <- transformSamples(x = tse, abund_values = "counts", method = "clr",
 ```
 
 
-       # Lab 2 
+# Lab 2 
        
   
-       ## unsupervised learning: clustering & visualization
+## unsupervised learning: clustering & visualization
                    
  1. Visualize beta-diversity using principal coordinate analysis (PCoA);based on the Bray-Curtis dissimilarities
  
@@ -307,10 +272,10 @@ euclidean_dmm_plot
 
 
 
-         # Lab 3 
+# Lab 3 
          
                 
-         ## unsupervised learning:Analysis and interpretation 
+## unsupervised learning:Analysis and interpretation 
 
  1. What taxa are driving the axis? Calculate the spearman correlation between PC1 and the relative abundance of the bacteria and visualize the results in a     bar plot.
 
