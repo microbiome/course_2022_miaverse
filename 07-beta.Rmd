@@ -229,7 +229,7 @@ tse_data <- sampleMetadata %>%
     returnSamples("relative_abundance")
 
 # Agglomeration
-tse_genus <- agglomerateByRank(tse_data, rank="Genus")
+tse_genus <- agglomerateByRank(tse_data, rank="genus")
 ```
 
 Performing PCoA with Bray-Curtis dissimilarity.
