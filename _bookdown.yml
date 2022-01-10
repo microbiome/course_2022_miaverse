@@ -18,6 +18,5 @@ rmd_files:
   - 08-abundance.Rmd
   - 09-material.Rmd
   - 10-community-typing.Rmd
-  - 11-misc.Rmd
-  - 12-Solutions.Rmd
-  - 90-Labs.Rmd
+  - 11-Solutions.Rmd
+  - 90-lab.Rmd
