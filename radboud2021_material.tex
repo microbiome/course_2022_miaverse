@@ -4,10 +4,14 @@
 %
 \documentclass[
   oneside]{book}
+\title{Questions for Lab 1, 2 and 3}
+\author{Leo lahti \& Rajesh Shigdel}
+\date{2022-01-10}
+
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -36,8 +40,8 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={Introduction to microbiome data science},
-  pdfauthor={University of Turku},
+  pdftitle={Questions for Lab 1, 2 and 3},
+  pdfauthor={Leo lahti \& Rajesh Shigdel},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
@@ -124,15 +128,11 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
-\ifluatex
+\ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{apalike}
-
-\title{Introduction to microbiome data science}
-\author{University of Turku}
-\date{2021-09-27}
 
 \begin{document}
 \maketitle
@@ -227,7 +227,7 @@ although this is not necessary for the training.
 The course takes place on each working day from 9am -- 1pm
 (CEST). Short breaks will be scheduled between sessions.
 
-The hands-on sessions consists of a set of questions and example
+The hands-on sessions consist of a set of questions and example
 data. Solve the exercises by taking advantage of the online examples
 and resources that are pointed out in the study material. There is
 often more than one way to solve a given task. It is assumed that you
@@ -390,8 +390,8 @@ the R session. Only uninstalled packages are installed.
 \begin{Highlighting}[]
 \CommentTok{\# List of packages that we need from cran and bioc }
 \NormalTok{cran\_pkg }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"BiocManager"}\NormalTok{, }\StringTok{"bookdown"}\NormalTok{, }\StringTok{"dplyr"}\NormalTok{, }\StringTok{"ecodist"}\NormalTok{, }\StringTok{"ggplot2"}\NormalTok{, }
-              \StringTok{"gridExtra"}\NormalTok{, }\StringTok{"kableExtra"}\NormalTok{, }\StringTok{"knitr"}\NormalTok{, }\StringTok{"scales"}\NormalTok{, }\StringTok{"vegan"}\NormalTok{)}
-\NormalTok{bioc\_pkg }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"ANCOMBC"}\NormalTok{, }\StringTok{"ape"}\NormalTok{, }\StringTok{"DESeq2"}\NormalTok{,  }\StringTok{"DirichletMultinomial"}\NormalTok{, }\StringTok{"mia"}\NormalTok{, }\StringTok{"miaViz"}\NormalTok{)}
+              \StringTok{"gridExtra"}\NormalTok{, }\StringTok{"kableExtra"}\NormalTok{,  }\StringTok{"knitr"}\NormalTok{, }\StringTok{"scales"}\NormalTok{, }\StringTok{"vegan"}\NormalTok{, }\StringTok{"matrixStats"}\NormalTok{)}
+\NormalTok{bioc\_pkg }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"yulab.utils"}\NormalTok{,}\StringTok{"ggtree"}\NormalTok{,}\StringTok{"ANCOMBC"}\NormalTok{, }\StringTok{"ape"}\NormalTok{, }\StringTok{"DESeq2"}\NormalTok{, }\StringTok{"DirichletMultinomial"}\NormalTok{, }\StringTok{"mia"}\NormalTok{, }\StringTok{"miaViz"}\NormalTok{)}
 
 \CommentTok{\# Gets those packages that are already installed}
 \NormalTok{cran\_pkg\_already\_installed }\OtherTok{\textless{}{-}}\NormalTok{ cran\_pkg[ cran\_pkg }\SpecialCharTok{\%in\%} \FunctionTok{installed.packages}\NormalTok{() ]}
@@ -441,6 +441,8 @@ mia and miaViz are prioritized. Packages that are loaded first have higher prior
 ##                      loaded
 ## mia                    TRUE
 ## miaViz                 TRUE
+## yulab.utils            TRUE
+## ggtree                 TRUE
 ## ANCOMBC                TRUE
 ## ape                    TRUE
 ## DESeq2                 TRUE
@@ -455,6 +457,7 @@ mia and miaViz are prioritized. Packages that are loaded first have higher prior
 ## knitr                  TRUE
 ## scales                 TRUE
 ## vegan                  TRUE
+## matrixStats            TRUE
 \end{verbatim}
 
 \hypertarget{reproducible-reporting-with-rmarkdown}{%
@@ -723,6 +726,10 @@ research} F1000Research 9:1464 (slides).
 ## The following object is masked from 'package:base':
 ## 
 ##     strsplit
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: MultiAssayExperiment
 \end{verbatim}
 
 \begin{verbatim}
@@ -1186,7 +1193,7 @@ import the data and generate the analyses.
   diversities. Tips: colData
 \item
   \textbf{Subsetting} Pick a subset of the data object including only
-  ADHD individuals from Cohort 1. How many there are? Tips: subsetSamples
+  ADHD individuals from Cohort 1. How many there are? Tips: subsetting in \href{https://microbiome.github.io/OMA/datamanipulation.html\#subsetting}{OMA}
 \item
   \textbf{Transformations} The data contains read counts. We can convert
   these into relative abundances and other formats. Compare abundance
@@ -1354,6 +1361,10 @@ import the data and generate the analyses.
 ## The following object is masked from 'package:base':
 ## 
 ##     strsplit
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: MultiAssayExperiment
 \end{verbatim}
 
 \begin{verbatim}
@@ -1807,6 +1818,10 @@ Add the following in the reproducible summary report.
 \end{verbatim}
 
 \begin{verbatim}
+## Loading required package: MultiAssayExperiment
+\end{verbatim}
+
+\begin{verbatim}
 ## Loading required package: ggplot2
 \end{verbatim}
 
@@ -2027,7 +2042,7 @@ Perform PCoA and use the BMI as our continuous variable:
     \FunctionTok{returnSamples}\NormalTok{(}\StringTok{"relative\_abundance"}\NormalTok{)}
 
 \CommentTok{\# Agglomeration}
-\NormalTok{tse\_genus }\OtherTok{\textless{}{-}} \FunctionTok{agglomerateByRank}\NormalTok{(tse\_data, }\AttributeTok{rank=}\StringTok{"Genus"}\NormalTok{)}
+\NormalTok{tse\_genus }\OtherTok{\textless{}{-}} \FunctionTok{agglomerateByRank}\NormalTok{(tse\_data, }\AttributeTok{rank=}\StringTok{"genus"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2098,7 +2113,7 @@ variables are associated with each other.
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "Different different cohorts and variance of abundance between samples, p-value: 0.7412"
+## [1] "Different different cohorts and variance of abundance between samples, p-value: 0.7434"
 \end{verbatim}
 
 The cohort variable is not significantly associated with
@@ -2165,7 +2180,7 @@ A dedicated section presenting examples on community typing is in the
 
 \begin{itemize}
 \item
-  Visualize community variation with different methods (PCA, MDS, t-SNE\ldots) by using the options in the alternative method, plotReducedDim \href{https://microbiome.github.io/OMA/microbiome-diversity.html\#estimating-beta-diversity}{OMA}. Compare results obtained with different dissimilarities (Euclidean, Bray-Curtis, Unifrac..) and transformations (CLR, compositional..) of your own choice."
+  Visualize community variation with different methods (PCA, MDS, t-SNE\ldots) by using the options in the alternative method, plotReducedDim \href{https://microbiome.github.io/OMA/microbiome-diversity.html\#estimating-beta-diversity}{OMA}. Compare results obtained with different dissimilarities (Euclidean, Bray-Curtis, Unifrac..) and transformations (CLR, compositional..) of your own choice.''
 \item
   Investigate the influence of the data transformations on
   statistical analysis: Visualize community variation with PCoA with
@@ -2551,7 +2566,7 @@ Then we can plot these six different taxa. Let's arrange them into the same pict
 
 \includegraphics{08-abundance_files/figure-latex/unnamed-chunk-11-1.pdf}
 
-We plotted those taxa that have the highest and lowest p values according to DESeq2. Can you create a plot that shows the difference in abundance in "{[}Ruminococcus{]}\_gauvreauii\_group", which is the other taxon that was identified by all tools. Try for yourself! Below you find one way how to do it.
+We plotted those taxa that have the highest and lowest p values according to DESeq2. Can you create a plot that shows the difference in abundance in ``{[}Ruminococcus{]}\_gauvreauii\_group'', which is the other taxon that was identified by all tools. Try for yourself! Below you find one way how to do it.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3285,7 +3300,7 @@ Looking at heat maps of the CSTs can reveal structure on a different level. Usin
 \end{Shaded}
 
 \begin{verbatim}
-## R version 4.1.1 (2021-08-10)
+## R Under development (unstable) (2022-01-07 r81454)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.3 LTS
 ## 
@@ -3295,7 +3310,7 @@ Looking at heat maps of the CSTs can reveal structure on a different level. Usin
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
 ##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
-##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=C             
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
 ##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
 ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
 ## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
@@ -3307,80 +3322,75 @@ Looking at heat maps of the CSTs can reveal structure on a different level. Usin
 ## other attached packages:
 ##  [1] ade4_1.7-18                    plyr_1.8.6                    
 ##  [3] gridExtra_2.3                  philentropy_0.5.0             
-##  [5] cowplot_1.1.1                  scater_1.21.6                 
-##  [7] scuttle_1.3.1                  cluster_2.1.2                 
+##  [5] cowplot_1.1.1                  scater_1.23.2                 
+##  [7] scuttle_1.5.0                  cluster_2.1.2                 
 ##  [9] factoextra_1.0.7               RColorBrewer_1.1-2            
-## [11] pheatmap_1.0.12                miaViz_1.1.4                  
+## [11] pheatmap_1.0.12                miaViz_1.3.2                  
 ## [13] ggraph_2.0.5                   ggplot2_3.3.5                 
-## [15] mia_1.1.14                     TreeSummarizedExperiment_2.1.4
-## [17] Biostrings_2.61.2              XVector_0.33.0                
-## [19] SingleCellExperiment_1.15.2    SummarizedExperiment_1.23.4   
-## [21] Biobase_2.53.0                 GenomicRanges_1.45.0          
-## [23] GenomeInfoDb_1.29.8            IRanges_2.27.2                
-## [25] S4Vectors_0.31.4               BiocGenerics_0.39.2           
-## [27] MatrixGenerics_1.5.4           matrixStats_0.61.0            
+## [15] mia_1.3.13                     MultiAssayExperiment_1.21.5   
+## [17] TreeSummarizedExperiment_2.3.0 Biostrings_2.63.1             
+## [19] XVector_0.35.0                 SingleCellExperiment_1.17.2   
+## [21] SummarizedExperiment_1.25.3    Biobase_2.55.0                
+## [23] GenomicRanges_1.47.5           GenomeInfoDb_1.31.1           
+## [25] IRanges_2.29.1                 S4Vectors_0.33.9              
+## [27] BiocGenerics_0.41.2            MatrixGenerics_1.7.0          
+## [29] matrixStats_0.61.0            
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] readxl_1.3.1                backports_1.2.1            
-##   [3] igraph_1.2.6                lazyeval_0.2.2             
-##   [5] splines_4.1.1               BiocParallel_1.27.10       
-##   [7] digest_0.6.28               yulab.utils_0.0.2          
-##   [9] htmltools_0.5.2             viridis_0.6.1              
-##  [11] fansi_0.5.0                 magrittr_2.0.1             
-##  [13] memoise_2.0.0               ScaledMatrix_1.1.0         
-##  [15] DECIPHER_2.21.0             openxlsx_4.2.4             
-##  [17] graphlayouts_0.7.1          colorspace_2.0-2           
-##  [19] blob_1.2.2                  ggrepel_0.9.1              
-##  [21] haven_2.4.3                 xfun_0.26                  
-##  [23] dplyr_1.0.7                 crayon_1.4.1               
-##  [25] RCurl_1.98-1.5              jsonlite_1.7.2             
-##  [27] ape_5.5                     glue_1.4.2                 
-##  [29] polyclip_1.10-0             gtable_0.3.0               
-##  [31] zlibbioc_1.39.0             DelayedArray_0.19.4        
-##  [33] car_3.0-11                  BiocSingular_1.9.1         
-##  [35] abind_1.4-5                 scales_1.1.1               
-##  [37] DBI_1.1.1                   rstatix_0.7.0              
-##  [39] Rcpp_1.0.7                  viridisLite_0.4.0          
-##  [41] decontam_1.13.0             gridGraphics_0.5-1         
-##  [43] tidytree_0.3.5              foreign_0.8-81             
-##  [45] bit_4.0.4                   rsvd_1.0.5                 
-##  [47] ellipsis_0.3.2              pkgconfig_2.0.3            
-##  [49] farver_2.1.0                utf8_1.2.2                 
-##  [51] ggplotify_0.1.0             tidyselect_1.1.1           
-##  [53] labeling_0.4.2              rlang_0.4.11               
-##  [55] reshape2_1.4.4              cellranger_1.1.0           
-##  [57] munsell_0.5.0               tools_4.1.1                
-##  [59] cachem_1.0.6                DirichletMultinomial_1.35.0
-##  [61] generics_0.1.0              RSQLite_2.2.8              
-##  [63] broom_0.7.9                 evaluate_0.14              
-##  [65] stringr_1.4.0               fastmap_1.1.0              
-##  [67] yaml_2.2.1                  ggtree_3.1.4               
-##  [69] knitr_1.34                  bit64_4.0.5                
-##  [71] tidygraph_1.2.0             zip_2.2.0                  
-##  [73] purrr_0.3.4                 nlme_3.1-153               
-##  [75] sparseMatrixStats_1.5.3     aplot_0.1.1                
-##  [77] compiler_4.1.1              beeswarm_0.4.0             
-##  [79] curl_4.3.2                  ggsignif_0.6.3             
-##  [81] treeio_1.17.2               tibble_3.1.4               
-##  [83] tweenr_1.0.2                stringi_1.7.4              
-##  [85] highr_0.9                   forcats_0.5.1              
-##  [87] lattice_0.20-45             Matrix_1.3-4               
-##  [89] vegan_2.5-7                 permute_0.9-5              
-##  [91] vctrs_0.3.8                 pillar_1.6.3               
-##  [93] lifecycle_1.0.1             BiocNeighbors_1.11.0       
-##  [95] data.table_1.14.0           bitops_1.0-7               
-##  [97] irlba_2.3.3                 patchwork_1.1.1            
-##  [99] R6_2.5.1                    bookdown_0.24              
-## [101] rio_0.5.27                  vipor_0.4.5                
-## [103] MASS_7.3-54                 assertthat_0.2.1           
-## [105] withr_2.4.2                 GenomeInfoDbData_1.2.7     
-## [107] hms_1.1.1                   mgcv_1.8-37                
-## [109] parallel_4.1.1              ggfun_0.0.4                
-## [111] beachmat_2.9.1              tidyr_1.1.3                
-## [113] rmarkdown_2.11              DelayedMatrixStats_1.15.4  
-## [115] carData_3.0-4               ggpubr_0.4.0               
-## [117] ggnewscale_0.4.5            ggforce_0.3.3              
-## [119] ggbeeswarm_0.6.0
+##   [1] backports_1.4.1             igraph_1.2.11              
+##   [3] lazyeval_0.2.2              splines_4.2.0              
+##   [5] BiocParallel_1.29.10        digest_0.6.29              
+##   [7] yulab.utils_0.0.4           htmltools_0.5.2            
+##   [9] viridis_0.6.2               fansi_1.0.0                
+##  [11] magrittr_2.0.1              memoise_2.0.1              
+##  [13] ScaledMatrix_1.3.0          DECIPHER_2.23.0            
+##  [15] graphlayouts_0.8.0          colorspace_2.0-2           
+##  [17] blob_1.2.2                  ggrepel_0.9.1              
+##  [19] xfun_0.29                   dplyr_1.0.7                
+##  [21] crayon_1.4.2                RCurl_1.98-1.5             
+##  [23] jsonlite_1.7.2              ape_5.6-1                  
+##  [25] glue_1.6.0                  polyclip_1.10-0            
+##  [27] gtable_0.3.0                zlibbioc_1.41.0            
+##  [29] DelayedArray_0.21.2         car_3.0-12                 
+##  [31] BiocSingular_1.11.0         abind_1.4-5                
+##  [33] scales_1.1.1                DBI_1.1.2                  
+##  [35] rstatix_0.7.0               Rcpp_1.0.7                 
+##  [37] viridisLite_0.4.0           decontam_1.15.0            
+##  [39] gridGraphics_0.5-1          tidytree_0.3.7             
+##  [41] bit_4.0.4                   rsvd_1.0.5                 
+##  [43] ellipsis_0.3.2              pkgconfig_2.0.3            
+##  [45] farver_2.1.0                utf8_1.2.2                 
+##  [47] ggplotify_0.1.0             tidyselect_1.1.1           
+##  [49] labeling_0.4.2              rlang_0.4.12               
+##  [51] reshape2_1.4.4              munsell_0.5.0              
+##  [53] tools_4.2.0                 cachem_1.0.6               
+##  [55] DirichletMultinomial_1.37.0 generics_0.1.1             
+##  [57] RSQLite_2.2.9               broom_0.7.11               
+##  [59] evaluate_0.14               stringr_1.4.0              
+##  [61] fastmap_1.1.0               yaml_2.2.1                 
+##  [63] ggtree_3.3.1                knitr_1.37                 
+##  [65] bit64_4.0.5                 tidygraph_1.2.0            
+##  [67] purrr_0.3.4                 nlme_3.1-153               
+##  [69] sparseMatrixStats_1.7.0     aplot_0.1.2                
+##  [71] compiler_4.2.0              beeswarm_0.4.0             
+##  [73] ggsignif_0.6.3              treeio_1.19.1              
+##  [75] tibble_3.1.6                tweenr_1.0.2               
+##  [77] stringi_1.7.6               highr_0.9                  
+##  [79] lattice_0.20-45             Matrix_1.4-0               
+##  [81] vegan_2.5-7                 permute_0.9-5              
+##  [83] vctrs_0.3.8                 pillar_1.6.4               
+##  [85] lifecycle_1.0.1             BiocNeighbors_1.13.0       
+##  [87] bitops_1.0-7                irlba_2.3.5                
+##  [89] patchwork_1.1.1             R6_2.5.1                   
+##  [91] bookdown_0.24               vipor_0.4.5                
+##  [93] MASS_7.3-54                 assertthat_0.2.1           
+##  [95] withr_2.4.3                 GenomeInfoDbData_1.2.7     
+##  [97] mgcv_1.8-38                 parallel_4.2.0             
+##  [99] ggfun_0.0.4                 beachmat_2.11.0            
+## [101] tidyr_1.1.4                 rmarkdown_2.11             
+## [103] DelayedMatrixStats_1.17.0   carData_3.0-5              
+## [105] ggpubr_0.4.0                ggnewscale_0.4.5           
+## [107] ggforce_0.3.3               ggbeeswarm_0.6.0
 \end{verbatim}
 
 \hypertarget{bibliography}{%
@@ -3397,289 +3407,6 @@ Susan Holmes and Joey McMurdie. 2015. Reproducible Research: Enterotype Example.
 Daniel B. DiGiulio et al.~2015. Temporal and spatial variation of the human microbiota during pregnancy. (112): 11060--11065. \url{doi:10.1073/pnas.1502875112}
 
 Arumugam, M., et al.~(2011). Enterotypes of the human gut microbiome.
-
-\begin{verbatim}
-## Loading required package: SummarizedExperiment
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: MatrixGenerics
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: matrixStats
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'MatrixGenerics'
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:matrixStats':
-## 
-##     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
-##     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
-##     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
-##     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
-##     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
-##     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
-##     colWeightedMeans, colWeightedMedians, colWeightedSds,
-##     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
-##     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
-##     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
-##     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
-##     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
-##     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
-##     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
-##     rowWeightedSds, rowWeightedVars
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: GenomicRanges
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: stats4
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: BiocGenerics
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'BiocGenerics'
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:stats':
-## 
-##     IQR, mad, sd, var, xtabs
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:base':
-## 
-##     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
-##     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
-##     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
-##     union, unique, unsplit, which.max, which.min
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: S4Vectors
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'S4Vectors'
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:base':
-## 
-##     expand.grid, I, unname
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: IRanges
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: GenomeInfoDb
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: Biobase
-\end{verbatim}
-
-\begin{verbatim}
-## Welcome to Bioconductor
-## 
-##     Vignettes contain introductory material; view with
-##     'browseVignettes()'. To cite Bioconductor, see
-##     'citation("Biobase")', and for packages 'citation("pkgname")'.
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'Biobase'
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:MatrixGenerics':
-## 
-##     rowMedians
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:matrixStats':
-## 
-##     anyMissing, rowMedians
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: SingleCellExperiment
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: TreeSummarizedExperiment
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: Biostrings
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: XVector
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'Biostrings'
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:base':
-## 
-##     strsplit
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: ggplot2
-\end{verbatim}
-
-\begin{verbatim}
-## Loading required package: ggraph
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'dplyr'
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:Biostrings':
-## 
-##     collapse, intersect, setdiff, setequal, union
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:XVector':
-## 
-##     slice
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:Biobase':
-## 
-##     combine
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:GenomicRanges':
-## 
-##     intersect, setdiff, union
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:GenomeInfoDb':
-## 
-##     intersect
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:IRanges':
-## 
-##     collapse, desc, intersect, setdiff, slice, union
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:S4Vectors':
-## 
-##     first, intersect, rename, setdiff, setequal, union
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:BiocGenerics':
-## 
-##     combine, intersect, setdiff, union
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:matrixStats':
-## 
-##     count
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-\end{verbatim}
-
-\hypertarget{miscellaneous-material}{%
-\chapter{Miscellaneous material}\label{miscellaneous-material}}
-
-\hypertarget{shapiro-wilk-test}{%
-\section{Shapiro-Wilk test}\label{shapiro-wilk-test}}
-
-If necessary, it is possible to assess normality of the data with Shapiro-Wilk test.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Does Shapiro{-}Wilk test. Does it only for columns that contain abundances, not for}
-\CommentTok{\# column that contain Groups.}
-
-\NormalTok{normality\_test\_p }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{()}
-
-\ControlFlowTok{for}\NormalTok{ (column }\ControlFlowTok{in} 
-\NormalTok{     abundance\_analysis\_data[, }\SpecialCharTok{!}\FunctionTok{names}\NormalTok{(abundance\_analysis\_data) }\SpecialCharTok{\%in\%} \StringTok{"patient\_status"}\NormalTok{])\{}
-  \CommentTok{\# Does Shapiro{-}Wilk test}
-\NormalTok{  result }\OtherTok{\textless{}{-}} \FunctionTok{shapiro.test}\NormalTok{(column)}
-  
-  \CommentTok{\# Stores p{-}value to vector}
-\NormalTok{  normality\_test\_p }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(normality\_test\_p, result}\SpecialCharTok{$}\NormalTok{p.value)}
-\NormalTok{\}}
-
-\FunctionTok{print}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"P{-}values over 0.05: "}\NormalTok{, }\FunctionTok{sum}\NormalTok{(normality\_test\_p}\SpecialCharTok{\textgreater{}}\FloatTok{0.05}\NormalTok{), }\StringTok{"/"}\NormalTok{, }
-             \FunctionTok{length}\NormalTok{(normality\_test\_p)))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] "P-values over 0.05: 7/54"
-\end{verbatim}
-
-\hypertarget{deseq-details}{%
-\section{Deseq details}\label{deseq-details}}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Raw counts are normalized by log-based scaling.\\
-\item
-  Taxa-wise variance is estimated. These values tell how much each taxa varies between samples.\\
-\item
-  A curve is fitted over all those taxa-wise variance estimates that we got in the last step.\\
-  This model tells how big the variance is in a specific abundance level.
-\item
-  The model is used to shrink those individual variance estimates to avoid the effect of,
-  e.g., small sample size and higher variance. This reduces the likelihood to get
-  false positives.\\
-\item
-  Variance estimates are used to compare different groups. We receive a result that shows whether the variance is explained by groups.
-\end{enumerate}
 
 \hypertarget{exercise-solutions}{%
 \chapter{Exercise Solutions}\label{exercise-solutions}}
@@ -3729,6 +3456,82 @@ Links:
 \item
   \href{08-5-ex-sol-ADHD.Rmd}{Rmd}
 \end{itemize}
+
+\hypertarget{tutorial-aims}{%
+\chapter{Tutorial Aims}\label{tutorial-aims}}
+
+In this tutorial we will learn feature selection, dimension reduction, clustering, visualization, analysis and interpretation using\\
+miaverse (mia = MIcrobiome Analysis) and miaViz - (Microbiome Analysis Plotting and Visualization) to explore patterns in human gut microbiome datasets.
+
+The examples in this tutorial are mainly based on this online book\\
+\href{https://microbiome.github.io/OMA/}{Orchestrating Microbiome Analysis}
+
+In this tutorial we use data from \href{https://www.microbiomeatlas.org/}{The Human Gut Microbiome Atlas (HGMA)}
+
+\hypertarget{lab-1}{%
+\chapter{Lab 1}\label{lab-1}}
+
+\hypertarget{unsupervised-learning-feature-selection-dimension-reduction}{%
+\section{unsupervised learning: Feature selection \& dimension reduction}\label{unsupervised-learning-feature-selection-dimension-reduction}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Make the tse (TreeSummarizedExperiment) Object for the further analysis (use the provided script to make a tse )
+\end{enumerate}
+
+\hypertarget{load-the-data}{%
+\section{Load the data}\label{load-the-data}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\item
+  Aggregate the data to Phylum level (agglomerateByRank)
+\item
+  Subset the data at the Species level with only taking bacterial Species that are greater than 10\% of prevalence in the total sample
+\item
+  Subset a tse object which consist only two phyla i.e Actinobacteria'', ``Cyanobacteria
+\item
+  Calculate relative abundances, and store the table to assays
+\end{enumerate}
+
+6.Perform a centred log-ratio transformation (clr) (i.e.~mia::transformSamples)
+
+\hypertarget{lab-2}{%
+\chapter{Lab 2}\label{lab-2}}
+
+\hypertarget{unsupervised-learning-clustering-visualization}{%
+\section{unsupervised learning: clustering \& visualization}\label{unsupervised-learning-clustering-visualization}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Visualize beta diversity using principal coordinate analysis (PCoA);based on the Bray-Curtis dissimilarities
+\item
+  Visualize beta diversity using principal coordinates analysis (PCoA); with Aitchison distance (clr transformation+ Euclidean distance)
+\item
+  Cluster the samples using Dirichlet- multinomial mixture model
+\item
+  Visualize the clusters in the PCoA plot
+\end{enumerate}
+
+\hypertarget{lab-3}{%
+\chapter{Lab 3}\label{lab-3}}
+
+\hypertarget{unsupervised-learninganalysis-and-interpretation}{%
+\section{unsupervised learning:Analysis and interpretation}\label{unsupervised-learninganalysis-and-interpretation}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  What taxa are driving the axis? Calculate the Spearman correlation between PC1 and the relative abundance of the bacteria and visualize the results in a bar plot.
+\item
+  Visualize the dominant taxonomic group of each sample by colour on PCoA plot
+\item
+  Visualize gender by colour on PCoA plot
+\end{enumerate}
 
   \bibliography{packages.bib}
 

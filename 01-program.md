@@ -4,7 +4,7 @@
 The course takes place on each working day from 9am – 1pm
 (CEST). Short breaks will be scheduled between sessions.
 
-The hands-on sessions consists of a set of questions and example
+The hands-on sessions consist of a set of questions and example
 data. Solve the exercises by taking advantage of the online examples
 and resources that are pointed out in the study material. There is
 often more than one way to solve a given task. It is assumed that you

@@ -41,8 +41,8 @@ the R session. Only uninstalled packages are installed.
 ```r
 # List of packages that we need from cran and bioc 
 cran_pkg <- c("BiocManager", "bookdown", "dplyr", "ecodist", "ggplot2", 
-              "gridExtra", "kableExtra", "knitr", "scales", "vegan")
-bioc_pkg <- c("ANCOMBC", "ape", "DESeq2",  "DirichletMultinomial", "mia", "miaViz")
+              "gridExtra", "kableExtra",  "knitr", "scales", "vegan", "matrixStats")
+bioc_pkg <- c("yulab.utils","ggtree","ANCOMBC", "ape", "DESeq2", "DirichletMultinomial", "mia", "miaViz")
 
 # Gets those packages that are already installed
 cran_pkg_already_installed <- cran_pkg[ cran_pkg %in% installed.packages() ]
@@ -88,6 +88,8 @@ as.data.frame(loaded)
 ##                      loaded
 ## mia                    TRUE
 ## miaViz                 TRUE
+## yulab.utils            TRUE
+## ggtree                 TRUE
 ## ANCOMBC                TRUE
 ## ape                    TRUE
 ## DESeq2                 TRUE
@@ -102,6 +104,7 @@ as.data.frame(loaded)
 ## knitr                  TRUE
 ## scales                 TRUE
 ## vegan                  TRUE
+## matrixStats            TRUE
 ```
 
 

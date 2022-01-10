@@ -150,6 +150,10 @@
 ```
 
 ```
+## Loading required package: MultiAssayExperiment
+```
+
+```
 ## Loading required package: ggplot2
 ```
 
@@ -375,7 +379,7 @@ tse_data <- sampleMetadata %>%
     returnSamples("relative_abundance")
 
 # Agglomeration
-tse_genus <- agglomerateByRank(tse_data, rank="Genus")
+tse_genus <- agglomerateByRank(tse_data, rank="genus")
 ```
 
 Performing PCoA with Bray-Curtis dissimilarity.
@@ -440,7 +444,7 @@ print(paste0("Different different cohorts and variance of abundance ",
 ```
 
 ```
-## [1] "Different different cohorts and variance of abundance between samples, p-value: 0.7412"
+## [1] "Different different cohorts and variance of abundance between samples, p-value: 0.7434"
 ```
 
 The cohort variable is not significantly associated with

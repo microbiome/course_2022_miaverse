@@ -150,6 +150,10 @@
 ```
 
 ```
+## Loading required package: MultiAssayExperiment
+```
+
+```
 ## Loading required package: ggplot2
 ```
 
