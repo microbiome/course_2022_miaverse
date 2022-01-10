@@ -1,0 +1,463 @@
+
+# Additional Community Typing
+
+```{r data, message=FALSE, warning=FALSE}
+# Load data
+library(mia)
+data(enterotype)
+tse <- enterotype
+```
+
+## Community composition
+
+### Composition barplot
+
+The typical way to visualise the microbiome compositions is by using a composition barplot.
+In the following, we calculate the relative abundances and the top 10 taxa. The barplot is ordered by "Bacteroidetes":
+
+```{r, message=FALSE, warning=FALSE}
+library(miaViz)
+
+# Remove unwanted taxon
+tse <- subsetTaxa(tse, rownames(tse) != "-1")
+# Only consider Sanger technique
+mat <- subsetSamples(tse, colData(tse)$SeqTech == "Sanger")
+
+# Get top taxa
+rel_taxa <- getTopTaxa(tse, top = 10, abund_values = "counts")
+
+# Take only the top taxa
+mat <- subsetTaxa(mat, is.element(rownames(tse), rel_taxa))
+
+# Visualise composition barplot, with samples order by "Bacteroides"
+plotAbundance(mat, abund_values = "counts",
+              order_rank_by = "abund", order_sample_by = "Bacteroides")
+```
+
+### Composition heatmap
+
+Community composition can be visualised with a heatmap. The colour of each intersection point represents the abundance of a taxon in a specific sample.
+
+Here, the CLR + Z-transformed abundances are shown.
+
+```{r, message=FALSE, warning=FALSE}
+library(pheatmap)
+library(grid)
+library(RColorBrewer)
+# CLR and Z transforms
+mat <- transformCounts(tse, abund_values = "counts", method = "clr", pseudocount = 1)
+mat <- transformFeatures(mat, abund_values = "clr", method = "z")
+# Take only the top taxa
+mat <- subsetTaxa(mat, is.element(rownames(tse), rel_taxa))
+
+# For annotating heat map
+SeqTechs <- data.frame("SeqTech" = colData(mat)$SeqTech)
+rownames(SeqTechs) <- colData(mat)$Sample_ID
+# count matrix for pheatmap
+mat <- assays(mat)$z
+
+# Make grid for heatmap
+breaks <- seq(-2, 2, length.out = 10)
+setHook("grid.newpage", function() pushViewport(viewport(x = 1, y = 1, width = 0.9, 
+                                                         height = 0.9, name = "vp", 
+                                                         just = c("right","top"))), 
+        action = "prepend")
+pheatmap(mat, color = rev(brewer.pal(9, "RdBu")), breaks = breaks, main = "SeqTechs", treeheight_row = 0, treeheight_col = 0, show_colnames = 0, annotation_col = SeqTechs, cluster_cols = F)
+setHook("grid.newpage", NULL, "replace")
+grid.text("Sample", x = 0.39, y = -0.04, gp = gpar(fontsize = 16))
+grid.text("Genus", x = -0.04, y = 0.47, rot = 90, gp = gpar(fontsize = 16))
+```
+
+## Cluster into CSTs
+
+The burden of specifying the number of clusters falls on the researcher. To help make an informed decision, we turn to previously established methods for doing so. In this section we introduce three such methods (aside from DMM analysis) to cluster similar samples. They include the [Elbow Method, Silhouette Method, and Gap Statistic Method](https://uc-r.github.io/kmeans_clustering). All of them will utilise the [`kmeans'](https://uc-r.github.io/kmeans_clustering) algorithm which essentially assigns clusters and minimises the distance within clusters (a sum of squares calculation). The default distance metric used is the Euclidean metric.
+
+The scree plot allows us to see how much of the variance is captured by each dimension in the MDS ordination.
+
+```{r scree}
+library(ggplot2); th <- theme_bw()
+
+# reset data
+tse <- enterotype
+
+# MDS analysis with the first 20 dimensions
+tse  <- scater::runMDS(tse, FUN = vegan::vegdist, method = "bray", 
+                       name = "MDS_BC", exprs_values = "counts", ncomponents = 20)
+ord  <- reducedDim(tse, "MDS_BC", withDimnames = TRUE)
+# retrieve eigenvalues
+eigs <- attr(ord, "eig")
+
+# variance in each of the axes
+var <- eigs / sum(eigs)
+# first 12 values
+df <- data.frame(x = c(1:12), y = var[1:12])
+
+# create scree plot
+p <- ggplot(df, aes(x, y)) +
+     geom_bar(stat="identity") +
+     xlab("Principal Component") +
+     ylab("Variance") +
+     ggtitle("Scree Plot")
+p
+```
+
+From the scree plot (above), we can see that the two principal dimensions can account for 68% of the total variation, but at least the top 4 eigenvalues are considerable. Dimensions beyond 3 and 4 may be useful so let's try to remove the less relevant dimensions.
+
+```{r}
+# histogram of MDS eigenvalues from the fifth dimension onward
+h <- hist(eigs[5:length(eigs)], 100)
+```
+
+```{r message = FALSE, warning = FALSE}
+plot(h$mids, h$count, log = "y", type = "h", lwd = 10, lend = 2)
+```
+
+As you can see, dimensions 5, 6, and 7 still stand out so we will include 7 MDS dimensions.
+
+### Elbow Method
+
+This method graphs the sum of the sum of squares for each $k$ (number of clusters), where $k$ ranges between 1 and 10. Where the bend or `elbow' occurs is the optimal value of $k$.
+
+```{r elbow, message = FALSE}
+library(factoextra)
+
+# take only first 7 dimensions
+NDIM <- 7
+x    <- ord[, 1:NDIM]
+
+# Elbow Method
+factoextra::fviz_nbclust(x, kmeans, method = "wss") +
+                         geom_vline(xintercept = 3, linetype = 2) +
+                         labs(subtitle = "Elbow Method") + th
+```
+
+As you can see, the bend occurs at $k=3$, implying there are three clusters present in the enterotype data.
+
+### Silhouette Method
+
+This method on the otherhand returns a width for each $k$. In this case, we want the $k$ that maximises the width.
+
+```{r silhouette}
+# Silhouette method
+factoextra::fviz_nbclust(x, kmeans, method = "silhouette") +
+                         labs(subtitle = "Silhouette method") + th
+```
+
+The graph shows the maximum occurring at $k=2$. $k=3$ is also strongly suggested by the plot and is consistent with what we obtained from the elbow method.
+
+### Gap-Statistic Method
+
+The Gap-Statistic Method is the most complicated among the methods discussed here. In the plot produced, we want the $k$ value that maximises the output (local and global maxima), but we also want to pay attention to where the plot jumps if the maximum value doesn't turn out to be helpful. 
+
+```{r gap-statistic}
+# Gap Statistic Method
+factoextra::fviz_nbclust(x, kmeans, method = "gap_stat", nboot = 50)+
+                         labs(subtitle = "Gap Statistic Method") + th
+```
+
+$k=6$ clusters, as the peak suggests, would not be very revealing since having too many clusters can cease to be revealing and so we look to the points where the graph jumps. We can see this occurs at $k=2$ and $k=8$. The output indicates that there are at least two clusters present. Since we have previous evidence for the existence of three clusters and $k=3$ yields a higher gap statistic than $k=2$, $k=3$ seems to be a good choice.
+
+One could argue for the existence of two or three clusters as they are both good candidates. At times like these it helps to visualise the clustering in an MDS or NMDS plot. 
+
+Now let's divide the subjects into their respective clusters.
+
+```{r create clusters}
+library(cluster)
+
+# assume 3 clusters
+K <- 3
+x <- ord[, 1:NDIM]
+
+clust <- as.factor(pam(x, k = K, cluster.only = T))
+# swapping the assignment of 2 and 3 to match ravel cst enumeration
+clust[clust == 2] <- NA
+clust[clust == 3] <- 2
+clust[is.na(clust)] <- 3
+
+colData(tse)$CST <- clust
+CSTs <- as.character(seq(K))
+```
+
+Let's take a look at the MDS ordination with the Bray-Curtis dissimilarity in the first four dimensions.
+
+```{r message = FALSE, warning = FALSE}
+library(scater)
+library(RColorBrewer)
+library(cowplot)
+
+# set up colours
+CSTColors <- brewer.pal(6, "Paired")[c(2, 5, 3)] # Length 6 for consistency with pre-revision CST+ colouration
+names(CSTColors) <- CSTs
+
+CSTColorScale <- scale_colour_manual(name = "CST", values = CSTColors)
+CSTFillScale <- scale_fill_manual(name = "CST", values = CSTColors)
+
+# plot MDS with Bray-Curtis dimensions 1 and 2
+p1 <- scater::plotReducedDim(tse, "MDS_BC", colour_by = "CST", point_alpha = 1, 
+                             percentVar = var[c(1, 2)]*100) + th + labs(title = "Ordination by Cluster") +
+                             theme(plot.title = element_text(hjust = 0.5))
+# plot MDS with Bray-Curtis dimensions 3 and 4
+p2 <- scater::plotReducedDim(tse, "MDS_BC", colour_by = "CST", point_alpha = 1, 
+                             ncomponents = c(3, 4), percentVar = var[c(1, 2, 3, 4)]*100) + th
+
+plot_grid(p1 + CSTColorScale, p2 + CSTColorScale, nrow = 2)
+```
+
+And now nMDS.
+
+```{r message = FALSE, warning = FALSE}
+tse  <- runNMDS(tse, FUN = vegan::vegdist, method = "bray", 
+                name = "NMDS_BC", exprs_values = "counts", ncomponents = 20)
+scater::plotReducedDim(tse, "NMDS_BC", colour_by = "CST", point_alpha = 1) + th + 
+        labs(title = "NMDS Bray-Curtis by Cluster") +
+        theme(plot.title = element_text(hjust = 0.5)) + CSTColorScale
+```
+
+We can also look at a multitude of other distance metrics and subsets of the data.
+
+## Holmes and McMurdie Workflow
+
+For the following distance measures, we will only consider the sequencing technique "Sanger" from the enterotype data.
+
+```{r}
+dim(tse)
+```
+
+```{r prep-data, message = FALSE, warning = FALSE, results = FALSE}
+# Subset data
+tse2 <- subsetSamples(tse, colData(tse)$SeqTech == "Sanger")
+
+# Change NAs to 0
+x <- as.vector(colData(tse2)$Enterotype)
+x[is.na(x)] <- 0
+x <- factor(x, levels = c("1", "2", "3", "0"))
+colData(tse2)$Enterotype <- x
+```
+
+```{r}
+dim(tse2)
+table(colData(tse2)$Enterotype)
+```
+
+### Jensen-Shannon Distance
+
+```{r message=FALSE, warning = FALSE}
+library(philentropy)
+
+custom_FUN <- function (x) as.dist(philentropy::JSD(x))
+tse2 <- scater::runMDS(tse2, FUN = custom_FUN, name = "MDS_JSD", exprs_values = "counts")
+scater::plotReducedDim(tse2, "MDS_JSD", colour_by = "Enterotype", 
+                       shape_by = "Enterotype", point_size = 4, point_alpha = 1) +
+                       ggtitle("Multidimensional Scaling using Jensen-Shannon Divergence") + th
+```
+
+### NonMetric Multidimensional Scaling
+
+```{r message=FALSE, warning = FALSE}
+tse2 <- mia::runNMDS(tse2, FUN = custom_FUN, nmdsFUN = "monoMDS", name = "NMDS_JSD")
+scater::plotReducedDim(tse2, "NMDS_JSD", colour_by = "Enterotype", 
+                       shape_by = "Enterotype", point_size = 4, point_alpha = 1) + 
+                       ggtitle("Non-Metric Multidimensional Scaling using Jensen-Shannon Divergence") + th
+```
+
+### Chi-Squared Correspondence Results
+
+```{r message = FALSE, warning = FALSE}
+tse2 <- mia::runCCA(tse2, name = "PCA_CS", exprs_values = "counts")
+scater::plotReducedDim(tse2, "PCA_CS", colour_by = "Enterotype", 
+                       shape_by = "Enterotype", point_size = 3, point_alpha = 1) +
+                       ggtitle("Correspondance Analysis using Chi-Squared Distance") + th
+```
+
+### Bray-Curtis MDS
+
+```{r message = FALSE, warning = FALSE}
+tse2 <- scater::runMDS(tse2, FUN = vegan::vegdist, name = "MDS_BC", exprs_values = "counts")
+scater::plotReducedDim(tse2, "MDS_BC", colour_by = "Enterotype", 
+                       shape_by = "Enterotype", point_size = 4, point_alpha = 1) +
+                       ggtitle("MDS using Bray-Curtis Dissimilarity") + th
+```
+
+### Bray-Curtis NMDS
+
+```{r message = FALSE, warning = FALSE}
+tse2 <- mia::runNMDS(tse2, FUN = vegan::vegdist, nmdsFUN = "monoMDS", method = "bray", name = "NMDS_BC")
+scater::plotReducedDim(tse2, "NMDS_BC", colour_by = "Enterotype", 
+                       shape_by = "Enterotype", point_size = 4, point_alpha = 1) + 
+                       ggtitle("nMDS using Bray-Curtis") + th
+```
+
+### Other distances from the Philentropy package
+
+```{r message = FALSE, warning = FALSE, fig.width=14, fig.height=12}
+library(gridExtra)
+# take distances that more or less match Holmes and McMurdie
+distances <- getDistMethods()[c(1, 2, 23, 42)]
+# variable to store results
+plist <- vector("list", length(distances))
+names(plist) <- distances
+
+# calculate each distance measure
+for (i in distances[1:length(distances)]) {
+  custom_FUN <- function (x) as.dist(philentropy::distance(x, method = i, p = 1))
+  tse2 <- scater::runMDS(tse2, FUN = custom_FUN, name = i, exprs_values = "counts")
+  # store result in plist
+  plist[[i]] <- scater::plotReducedDim(tse2, i, colour_by = "Enterotype")
+}
+
+library(plyr)
+
+# plot
+df <- ldply(plist, function(x) x$data)
+names(df) <- c("distance", "Axis.1", "Axis.2", "Enterotype")
+p <- ggplot(df, aes(Axis.1, Axis.2, color = Enterotype, shape = Enterotype)) + 
+     geom_point(size = 2.5, alpha = 0.5) + 
+     facet_wrap(~distance, scales = "free") + 
+     theme(strip.text = element_text(size = 8)) +
+     ggtitle("MDS on various distance metrics for Enterotype dataset") + th
+p
+```
+
+### Add a Clustering Variable
+
+It may be revealing to see the full data (with subsetting) clustered according to a colData variable.
+
+```{r message = FALSE, warning = FALSE, results = FALSE}
+# remove taxon
+tse3 <- subsetTaxa(tse, rownames(tse) != "-1")
+
+# Remove NAs
+x <- as.vector(colData(tse3)$Enterotype)
+x <- factor(x)
+colData(tse)$Enterotype <- x
+```
+
+```{r message = FALSE, warning = FALSE, fig.width=14, fig.height=12}
+# loop over distances
+for (i in distances[1:length(distances)]) {
+  custom_FUN <- function (x) as.dist(philentropy::distance(x, method = i, p = 1))
+  tse3 <- scater::runMDS(tse3, FUN = custom_FUN, name = i, exprs_values = "counts")
+  
+  plist[[i]] <- scater::plotReducedDim(tse3, i, colour_by = "SeqTech", shape_by = "Enterotype")
+}
+# plot
+df <- ldply(plist, function(x) x$data)
+names(df) <- c("distance", "Axis.1", "Axis.2", "SeqTech", "Enterotype")
+p <- ggplot(df, aes(Axis.1, Axis.2, color = SeqTech, shape = Enterotype)) + 
+     geom_point(size = 2, alpha = 0.5) +
+     facet_wrap(~distance, scales = "free") + 
+     theme(strip.text = element_text(size = 8)) +
+     ggtitle("MDS on various distance metrics for Enterotype dataset") + th
+p
+```
+
+### More Clustering
+
+Dropping 9 outliers (the 0 enterotype), let's visualise the clustering in a different manner. Based on our analysis above, we concluded there were 3 distinct clusters. The authors of the Nature paper published on the enterotype data created a figure similar to the following:
+
+```{r message = FALSE, warning = FALSE, results = FALSE}
+library(ade4)
+# remove 9 outliers
+tse2 <- subsetSamples(tse2, colData(tse2)$Enterotype != 0)
+colData(tse2)$Enterotype <- factor(colData(tse2)$Enterotype)
+```
+
+```{r message = FALSE, warning = FALSE}
+clus <- colData(tse2)$Enterotype
+dist <- calculateJSD(tse2)
+pcoa <- dudi.pco(dist, scannf = F, nf = 3)
+s.class(pcoa$li, grid = F, fac = clus)
+```
+
+Revisit the distances without the 9 outlier values.
+
+```{r message = FALSE, warning = FALSE, fig.width=14, fig.height=12}
+
+# loop over distances
+for (i in distances[1:length(distances)]) {
+  custom_FUN <- function (x) as.dist(philentropy::distance(x, method = i, p = 1))
+  tse2 <- scater::runMDS(tse2, FUN = custom_FUN, name = i, exprs_values = "counts")
+  
+  plist[[i]] <- scater::plotReducedDim(tse2, i, colour_by = "Enterotype")
+}
+# plot
+df <- ldply(plist, function(x) x$data)
+names(df) <- c("distance", "Axis.1", "Axis.2", "Enterotype")
+p <- ggplot(df, aes(Axis.1, Axis.2, color = Enterotype, shape = Enterotype)) + 
+     geom_point(size = 2.5, alpha = 0.5) + 
+     facet_wrap(~distance, scales = "free") + 
+     theme(strip.text = element_text(size = 8)) +
+     ggtitle("MDS on various distance metrics for Enterotype dataset with 9 samples removed") + th
+p
+```
+
+Would we use the same number of clusters as before with 9 values missing?
+
+```{r}
+## Slightly faster way to use pam
+pam1 <- function(x,k) list(cluster = pam(x,k, cluster.only=TRUE))
+
+pamPCoA = function(x, k) {
+    list(cluster = pam(x[,1:2], k, cluster.only = TRUE))
+}
+# gap statistic method
+gs <- clusGap(assays(tse2)$counts, FUN = pamPCoA, K.max = 10)
+fviz_gap_stat(gs)
+```
+
+We still see a jump at three so it is still a good choice for the number of clusters.
+
+## CST Analysis
+
+Looking at heat maps of the CSTs can reveal structure on a different level. Using all of the data again (for the top 20 taxa) and taking the z transformation of the clr transformed counts, we have
+
+```{r message = FALSE, warning = FALSE, results = FALSE}
+# Find top 20 taxa
+rel_taxa <- getTopTaxa(tse, top = 20)
+# Z transform of CLR counts
+mat <- transformCounts(tse, abund_values = "counts", method = "clr", pseudocount = 1)
+mat <- transformFeatures(mat, abund_values = "clr", method = "z")
+# Select top 20 taxa
+mat <- subsetTaxa(mat, is.element(rownames(tse), rel_taxa))
+mat <- assays(mat)$z
+
+# Order CSTs
+mat <- mat[, order(clust)]
+colnames(mat) <- names(sort(clust))
+```
+
+```{r messages = FALSE, warning = FALSE}
+# Plot
+CSTs        <- as.data.frame(sort(clust))
+names(CSTs) <- "CST"
+breaks <- seq(-2, 2, length.out = 10)
+# Make grid for heatmap
+setHook("grid.newpage", function() pushViewport(viewport(x = 1, y = 1, width = 0.9, 
+                                                         height = 0.9, name = "vp", 
+                                                         just = c("right","top"))), 
+        action = "prepend")
+pheatmap(mat, color = rev(brewer.pal(9, "RdBu")), breaks = breaks, main = "All CSTs", treeheight_row = 0, treeheight_col = 0, show_colnames = 0, annotation_col = CSTs, cluster_cols = F)
+setHook("grid.newpage", NULL, "replace")
+grid.text("Sample", x = 0.39, y = -0.04, gp = gpar(fontsize = 16))
+grid.text("Genus", x = -0.04, y = 0.47, rot = 90, gp = gpar(fontsize = 16))
+```
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
+
+## Bibliography
+
+Robert L. Thorndike. 1953. "Who Belongs in the Family?". Psychometrika. 18 (4): 267–276. doi:10.1007/BF02289263
+
+Peter J. Rousseeuw. 1987. "Silhouettes: a Graphical Aid to the Interpretation and Validation of Cluster Analysis". Computational and Applied Mathematics. 20: 53–65. doi:10.1016/0377-0427(87)90125-7.
+
+Robert Tibshirani, Guenther Walther, and Trevor Hastie. 2002. Estimating the number of clusters in a data set via the gap statistic method. (63): 411-423. doi:10.1111/1467-9868.00293.
+
+Susan Holmes and Joey McMurdie. 2015. Reproducible Research: Enterotype Example. http://statweb.stanford.edu/~susan/papers/EnterotypeRR.html.
+
+Daniel B. DiGiulio et al. 2015. Temporal and spatial variation of the human microbiota during pregnancy. (112): 11060--11065. doi:10.1073/pnas.1502875112
+
+Arumugam, M., et al. (2011). Enterotypes of the human gut microbiome.

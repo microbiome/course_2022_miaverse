@@ -1,0 +1,289 @@
+---
+title: "Questions for Lab 1, 2 and 3"
+author: "Leo lahti & Rajesh Shigdel"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+# Tutorial Aims 
+In this tutorial we will learn feature selection, dimension reduction, clustering, visualization, analysis and interpretation  using  
+ miaverse (mia = MIcrobiome Analysis) and miaViz - (Microbiome Analysis Plotting and Visualization) to explore patterns in human gut microbiome datasets. 
+
+The example in this tutorial are mainly based on this online book        
+[Orchestrating Microbiome Analysis](https://microbiome.github.io/OMA/)
+
+In this tutorial we use data from [The Human Gut Microbiome Atlas (HGMA)](https://www.microbiomeatlas.org/)
+
+
+
+# Lab 1 
+   
+   
+## unsupervised learning: Feature selection & dimension reduction
+   
+1. Make the tse (TreeSummarizedExperiment) Object for the further analysis  (use the provided script to make a tse)
+
+
+## Load the data 
+
+
+
+2. Aggregate the data to Phylum level 
+
+```{r}
+tse_phylum <- agglomerateByRank(tse, rank = "Phylum")
+```
+
+
+
+3. Subset the data at the Species level with only taking bacterial Species that are greater than 10% of prevalence in the total sample
+
+
+```{r}
+altExp(tse,"species") <- agglomerateByRank(se, "species")
+getPrevalentTaxa(tse, detection = 0, prevalence = 10/100)
+prev <- getPrevalentTaxa(tse, detection = 0, prevalence = 10/100)
+                         
+```
+
+
+4. Subset a tse object which consist only two phyla i.e Actinobacteria", "Cyanobacteria
+
+
+```{r}
+se_subset_by_feature <- se[rowData(tse)$phylum %in% c("Actinobacteria", "Cyanobacteria")]
+se_subset_by_feature
+```
+
+ 
+5. Calculate relative abundances, and store the table to assays
+
+
+```{r}
+tse <- relAbundanceCounts(tse)
+
+```
+
+
+6.Perform a centered log-ratio transformation (clr) (i.e. mia::transformSamples)
+
+```{r}
+tse <- transformSamples(x = tse, abund_values = "counts", method = "clr", 
+                       pseudocount = 1, name = "clr_transformation")
+```
+
+
+# Lab 2 
+       
+  
+## unsupervised learning: clustering & visualization
+                   
+ 1. Visualize beta-diversity using principal coordinate analysis (PCoA);based on the Bray-Curtis dissimilarities
+ 
+```{r}
+1.#PCoA for ASV-level data with Bray-Curtis
+
+se <- relAbundanceCounts(se)
+
+# Pick the relative abundance table
+rel_abund_assay <- assays(se)$relabundance
+
+# Calculates Bray-Curtis distances between samples. Because taxa is in
+# columns, it is used to compare different samples. We transpose the
+# assay to get taxa to columns
+bray_curtis_dist <- vegan::vegdist(t(rel_abund_assay), method = "bray")
+
+# PCoA
+bray_curtis_pcoa <- ecodist::pco(bray_curtis_dist)
+
+# All components could be found here: 
+# bray_curtis_pcoa$vectors
+# But we only need the first two to demonstrate what we can do:
+bray_curtis_pcoa_df <- data.frame(pcoa1 = bray_curtis_pcoa$vectors[,1], 
+                                  pcoa2 = bray_curtis_pcoa$vectors[,2])
+
+# Create a plot
+bray_curtis_plot <- ggplot(data = bray_curtis_pcoa_df, aes(x=pcoa1, y=pcoa2)) +
+  geom_point() +
+  labs(x = "PC1",
+       y = "PC2", 
+       title = "Bray-Curtis PCoA") +
+  theme(title = element_text(size = 10)) # makes titles smaller
+
+bray_curtis_plot
+```
+ 
+
+
+ 2. Visualize beta-diversity using principal coordinates analysis (PCoA); with Aitchison distance (clr transformation+ Euclidean distance)
+ 
+```{r}
+
+tse <- tse[, !is.na(tse$Gender)]
+
+
+# Does clr transformation. Pseudocount is added, because data contains zeros. 
+tse <- transformCounts(tse, method = "clr", pseudocount = 1)
+
+# Gets clr table
+clr_assay <- assays(tse)$clr
+
+# Transposes it to get taxa to columns
+clr_assay <- t(clr_assay)
+
+# Calculates Euclidean distances between samples. Because taxa is in columns,
+# it is used to compare different samples.
+euclidean_dist <- vegan::vegdist(clr_assay, method = "euclidean")
+
+# Does principal coordinate analysis
+euclidean_pcoa <- ecodist::pco(euclidean_dist)
+
+# Creates a data frame from principal coordinates
+euclidean_pcoa_df <- data.frame(pcoa1 = euclidean_pcoa$vectors[,1], 
+                                pcoa2 = euclidean_pcoa$vectors[,2])
+
+# Creates the plot
+euclidean_plot <- ggplot(data = euclidean_pcoa_df, aes(x=pcoa1, y=pcoa2)) +
+  geom_point() +
+  labs(x = "PC1",
+       y = "PC2",
+       title = "Euclidean PCoA with CLR transformation") +
+  theme(title = element_text(size = 12)) # makes titles smaller
+
+euclidean_plot
+
+
+
+```
+ 
+
+
+ 3. Cluster the samples using Dirichlet- multinomial mixture model 
+
+
+
+```{r}
+tse <- agglomerateByRank(tse, rank = "Phylum", agglomerateTree=TRUE)
+tse_dmn <- runDMN(tse, name = "DMN", k = 1:7)
+tse_dmn
+
+
+#Return information on metadata that the object contains.
+names(metadata(tse_dmn))
+#This returns a list of DMN objects for a closer investigation.
+getDMN(tse_dmn)
+
+```
+
+```{r}
+
+library(miaViz)
+plotDMNFit(tse_dmn, type = "laplace")
+
+```
+
+```{r}
+#Return the model that has the best fit.
+getBestDMNFit(tse_dmn, type = "laplace")
+```
+
+```{r}
+dmn_group <- calculateDMNgroup(tse_dmn, variable = "Geography",  exprs_values = "counts",
+                               k = 2, seed=.Machine$integer.max)
+
+dmn_group
+```
+
+
+
+```{r}
+#Mixture weights (rough measure of the cluster size).
+DirichletMultinomial::mixturewt(getBestDMNFit(tse_dmn))
+```
+
+```{r}
+#Samples-cluster assignment probabilities / how probable it is that sample belongs to each cluster
+
+head(DirichletMultinomial::mixture(getBestDMNFit(tse_dmn)))
+```
+
+
+```{r}
+#Contribution of each taxa to each component
+head(DirichletMultinomial::fitted(getBestDMNFit(tse_dmn)))
+```
+
+```{r}
+#Get the assignment probabilities
+prob <- DirichletMultinomial::mixture(getBestDMNFit(tse_dmn))
+# Add column names
+colnames(prob) <- c("comp1", "comp2")
+
+# For each row, finds column that has the highest value. Then extract the column 
+# names of highest values.
+vec <- colnames(prob)[max.col(prob,ties.method = "first")]
+
+```
+
+```{r}
+# Does clr transformation. Pseudocount is added, because data contains zeros.
+tse <- transformCounts(tse, method = "clr", pseudocount = 1)
+
+# Gets clr table
+clr_assay <- assays(tse)$clr
+
+# Transposes it to get taxa to columns
+clr_assay <- t(clr_assay)
+
+# Calculates Euclidean distances between samples. Because taxa is in columns,
+# it is used to compare different samples.
+euclidean_dist <- vegan::vegdist(clr_assay, method = "euclidean")
+
+# Does principal coordinate analysis
+euclidean_pcoa <- ecodist::pco(euclidean_dist)
+
+# Creates a data frame from principal coordinates
+euclidean_pcoa_df <- data.frame(pcoa1 = euclidean_pcoa$vectors[,1], 
+                                pcoa2 = euclidean_pcoa$vectors[,2])
+```
+
+ 4. Visualize the clusters in the PCoA plot
+
+```{r}
+# Creates a data frame that contains principal coordinates and DMM information
+euclidean_dmm_pcoa_df <- cbind(euclidean_pcoa_df,
+                               dmm_component = vec)
+# Creates a plot
+euclidean_dmm_plot <- ggplot(data = euclidean_dmm_pcoa_df, 
+                             aes(x=pcoa1, y=pcoa2,
+                                 color = dmm_component)) +
+  geom_point() +
+  labs(x = "Coordinate 1",
+       y = "Coordinate 2",
+       title = "PCoA with Aitchison distances") +  
+  theme(title = element_text(size = 12)) # makes titles smaller
+
+euclidean_dmm_plot
+```
+
+
+
+
+
+
+# Lab 3 
+         
+                
+## unsupervised learning:Analysis and interpretation 
+
+ 1. What taxa are driving the axis? Calculate the spearman correlation between PC1 and the relative abundance of the bacteria and visualize the results in a     bar plot.
+
+
+ 2. Visualize the dominant taxonomic group of each sample by colour on PCoA plot 
+
+ 3. Visualize gender by colour on PCoA plot 
+
+
+
+
